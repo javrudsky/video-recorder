@@ -13,13 +13,96 @@
         <!--Main View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController id="BYZ-38-t0r" customClass="MainViewController" customModule="polar_video_rec" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="BYZ-38-t0r" customClass="MainViewController" customModule="VideoRecorder" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC" customClass="MTKView">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="GiM-ad-tfT" userLabel="controls">
+                                <rect key="frame" x="10" y="712" width="394" height="150"/>
+                                <subviews>
+                                    <stackView opaque="NO" contentMode="scaleToFill" distribution="fillProportionally" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="RJ2-Fo-aB7" userLabel="brightnessView">
+                                        <rect key="frame" x="0.0" y="0.0" width="394" height="50"/>
+                                        <subviews>
+                                            <label opaque="NO" userInteractionEnabled="NO" alpha="0.5" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HGD-Je-7pv" userLabel="brightness">
+                                                <rect key="frame" x="0.0" y="15" width="177.5" height="20.5"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="sBf-Fx-g6n" userLabel="brightnessValue">
+                                                <rect key="frame" x="175.5" y="10" width="220.5" height="31"/>
+                                                <connections>
+                                                    <action selector="brightnessChanged:" destination="BYZ-38-t0r" eventType="valueChanged" id="6X5-LQ-bPJ"/>
+                                                </connections>
+                                            </slider>
+                                        </subviews>
+                                        <constraints>
+                                            <constraint firstItem="sBf-Fx-g6n" firstAttribute="width" secondItem="RJ2-Fo-aB7" secondAttribute="width" multiplier="0.55" id="6wn-9C-Hvw"/>
+                                            <constraint firstAttribute="height" constant="50" id="r8W-jY-Iag"/>
+                                        </constraints>
+                                    </stackView>
+                                    <stackView opaque="NO" contentMode="scaleToFill" distribution="fillProportionally" alignment="center" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="Mac-Kw-Hra" userLabel="contrastView">
+                                        <rect key="frame" x="0.0" y="50" width="394" height="50"/>
+                                        <subviews>
+                                            <label opaque="NO" userInteractionEnabled="NO" alpha="0.5" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yIr-8C-Wwd" userLabel="contrast">
+                                                <rect key="frame" x="0.0" y="15" width="167.5" height="20.5"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="1Qf-25-wew" userLabel="constrastValue">
+                                                <rect key="frame" x="175.5" y="10" width="220.5" height="31"/>
+                                                <connections>
+                                                    <action selector="constrastChanged:" destination="BYZ-38-t0r" eventType="valueChanged" id="nVz-4G-qU3"/>
+                                                </connections>
+                                            </slider>
+                                        </subviews>
+                                        <constraints>
+                                            <constraint firstItem="1Qf-25-wew" firstAttribute="width" secondItem="Mac-Kw-Hra" secondAttribute="width" multiplier="0.55" id="CTq-jM-eE5"/>
+                                            <constraint firstAttribute="height" constant="50" id="uMv-dx-HKw"/>
+                                        </constraints>
+                                    </stackView>
+                                    <stackView opaque="NO" contentMode="scaleToFill" distribution="fillProportionally" alignment="center" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="kVW-Qd-hch" userLabel="saturationView">
+                                        <rect key="frame" x="0.0" y="100" width="394" height="50"/>
+                                        <subviews>
+                                            <label opaque="NO" userInteractionEnabled="NO" alpha="0.5" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sZv-bT-Uag" userLabel="saturation">
+                                                <rect key="frame" x="0.0" y="15" width="167.5" height="20.5"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="pYY-ca-gZL" userLabel="saturationValue">
+                                                <rect key="frame" x="175.5" y="10" width="220.5" height="31"/>
+                                                <connections>
+                                                    <action selector="saturationChanged:" destination="BYZ-38-t0r" eventType="valueChanged" id="gTN-Md-Z2E"/>
+                                                </connections>
+                                            </slider>
+                                        </subviews>
+                                        <constraints>
+                                            <constraint firstItem="pYY-ca-gZL" firstAttribute="width" secondItem="kVW-Qd-hch" secondAttribute="width" multiplier="0.55" id="Ee7-ok-XHX"/>
+                                            <constraint firstAttribute="height" constant="50" id="Fmj-Ub-9VC"/>
+                                        </constraints>
+                                    </stackView>
+                                </subviews>
+                            </stackView>
+                        </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="GiM-ad-tfT" secondAttribute="trailing" constant="10" id="Njn-CT-lER"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="GiM-ad-tfT" secondAttribute="bottom" id="Rdr-6D-UbP"/>
+                            <constraint firstItem="GiM-ad-tfT" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="10" id="jRD-pC-E1O"/>
+                        </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
+                    <connections>
+                        <outlet property="brightnessLabel" destination="HGD-Je-7pv" id="iKQ-wP-NYN"/>
+                        <outlet property="brightnessSlider" destination="sBf-Fx-g6n" id="g5K-Wt-TV3"/>
+                        <outlet property="contrastLabel" destination="yIr-8C-Wwd" id="H4r-dW-tg8"/>
+                        <outlet property="contrastSlider" destination="1Qf-25-wew" id="Nhk-ek-JqZ"/>
+                        <outlet property="saturationLabel" destination="sZv-bT-Uag" id="uRp-uu-8c6"/>
+                        <outlet property="saturationSlider" destination="pYY-ca-gZL" id="hMj-aB-aFu"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
