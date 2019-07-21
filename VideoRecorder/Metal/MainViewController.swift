@@ -71,7 +71,7 @@ class MainViewController: UIViewController {
     @IBAction func constrastChanged(_ sender: Any) {
         let slider = sender as! UISlider
         let value = slider.value
-        //renderer.contrast = value
+        renderer.contrast = value
         setContrastTitle(value: value)
     }
     

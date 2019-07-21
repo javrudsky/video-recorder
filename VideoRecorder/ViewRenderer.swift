@@ -12,28 +12,39 @@ import MetalKit
 struct AttributeIndex {
     static let vertexPosition = 0
     static let vertexColor = 1
-}
-
-struct Vertex {
-    var position: float3
-    var color: float4
+    static let textureCoordinates = 2
 }
 
 class ViewRenderer: NSObject  {
     
     var device: MTLDevice
     var commandQueue: MTLCommandQueue!
+    var filters: Filters
+    var texture: MTLTexture?
+    var sampleState: MTLSamplerState?
+    
+    var brightness: Float = 0.0 {
+        didSet {
+            filters.brightness = brightness
+        }
+    }
+    
+    var contrast: Float = 0.0 {
+        didSet {
+            filters.contrast = contrast
+        }
+    }
     
     var vertices: [Vertex] = [
-        Vertex(position: float3(-1.0, 1.0, 0.0), color: float4(1.0, 0.0, 0.0, 1.0)),
-        Vertex(position: float3(1.0, 1.0, 0.0), color: float4(0.0, 1.0, 0.0, 1.0)),
-        Vertex(position: float3(-1.0, -1.0, 0.0), color: float4(0.0, 0.0, 1.0, 1.0)),
-        Vertex(position: float3(1.0, -1.0, 0.0), color: float4(0.0, 0.0, 1.0, 1.0))
+        Vertex(position: float3(-1.0, 1.0, 0.0), color: float4(1.0, 0.0, 0.0, 1.0), texture: float2(0.0, 1.0)),
+        Vertex(position: float3(-1.0, -1.0, 0.0), color: float4(1.0, 0.0, 0.0, 1.0), texture: float2(0.0, 0.0)),
+        Vertex(position: float3(1.0, -1.0, 0.0), color: float4(1.0, 0.0, 0.0, 1.0), texture: float2(1.0, 0.0)),
+        Vertex(position: float3(1.0, 1.0, 0.0), color: float4(0.0, 1.0, 1.0, 1.0), texture: float2(1.0, 1.0)),
     ]
     
     var indexes: [UInt16] = [
         0, 1, 2,
-        1, 2, 3
+        2, 3, 0
     ]
     
     
@@ -44,30 +55,45 @@ class ViewRenderer: NSObject  {
     override init() {
         self.device = MTLCreateSystemDefaultDevice()!
         self.commandQueue = device.makeCommandQueue()!
+        self.filters = Filters()
         super.init()
         buildModel()
         buildPipelineState()
+        buildSampleState()
     }
     
     private func buildModel() {
-        vertexBuffer = device.makeBuffer(bytes: vertices, length: vertices.count * MemoryLayout<Vertex>.size, options: [])
+        // TODO: Find out why should add +1 to vertices.count to make the shader get the last vertex
+        vertexBuffer = device.makeBuffer(bytes: vertices, length: (vertices.count + 1) * MemoryLayout<Vertex>.size, options: [])
         indexBuffer = device.makeBuffer(bytes: indexes, length: indexes.count * MemoryLayout<UInt16>.size, options: [])
         
     }
     
     private func buildPipelineState() {
         let library = device.makeDefaultLibrary()
+        var fragmentFunctionName = "fragment_shader"
+        texture = loadTexture(imageName: "jeep", imageExtension: "jpg")
+        if let _ = texture {
+            fragmentFunctionName = "texture_shader"
+        }
         let vertexFunction = library?.makeFunction(name: "vertex_shader")
-        let fragmentFunction = library?.makeFunction(name: "fragment_shader")
+        let fragmentFunction = library?.makeFunction(name: fragmentFunctionName)
         
         let vertexDescriptor = MTLVertexDescriptor()
         vertexDescriptor.attributes[AttributeIndex.vertexPosition].format = .float3
         vertexDescriptor.attributes[AttributeIndex.vertexPosition].offset = 0
         vertexDescriptor.attributes[AttributeIndex.vertexPosition].bufferIndex = 0
+        
         vertexDescriptor.attributes[AttributeIndex.vertexColor].format = .float4
         vertexDescriptor.attributes[AttributeIndex.vertexColor].offset = MemoryLayout<float3>.stride
         vertexDescriptor.attributes[AttributeIndex.vertexColor].bufferIndex = 0
+        
+        vertexDescriptor.attributes[AttributeIndex.textureCoordinates].format = .float2
+        vertexDescriptor.attributes[AttributeIndex.textureCoordinates].offset = MemoryLayout<float3>.stride + MemoryLayout<float4>.stride
+        vertexDescriptor.attributes[AttributeIndex.textureCoordinates].bufferIndex = 0
+        
         vertexDescriptor.layouts[0].stride = MemoryLayout<Vertex>.stride
+        
         
         let pipelineDescriptor = MTLRenderPipelineDescriptor()
         pipelineDescriptor.vertexFunction = vertexFunction
@@ -82,6 +108,34 @@ class ViewRenderer: NSObject  {
         }
         
     }
+    
+    private func loadTexture(imageName: String, imageExtension: String) -> MTLTexture? {
+        var texture: MTLTexture? = nil;
+        let textureLoader = MTKTextureLoader(device: device)
+        let textureLoaderOptions: [MTKTextureLoader.Option: Any]
+        if ProcessInfo().isOperatingSystemAtLeast(OperatingSystemVersion(majorVersion: 10, minorVersion: 0, patchVersion: 0)) {
+            textureLoaderOptions = [MTKTextureLoader.Option.origin: MTKTextureLoader.Origin.bottomLeft]
+        } else {
+            textureLoaderOptions = [:]
+        }
+        
+        if let textureUrl = Bundle.main.url(forResource: imageName, withExtension: imageExtension) {
+            do {
+                texture = try textureLoader.newTexture(URL: textureUrl, options: textureLoaderOptions)
+            } catch {
+                print("error: Texture loaded \(error.localizedDescription)")
+            }
+        }
+        return texture;
+    }
+    
+    private func buildSampleState() {
+        let descriptor = MTLSamplerDescriptor()
+        descriptor.minFilter = .linear
+        descriptor.magFilter = .linear
+        sampleState = device.makeSamplerState(descriptor: descriptor)
+    }
+    
 }
 
 extension ViewRenderer: MTKViewDelegate {
@@ -94,15 +148,17 @@ extension ViewRenderer: MTKViewDelegate {
             let pipelineState = pipelineState,
             let descriptor = view.currentRenderPassDescriptor ,
             let indexBuffer = self.indexBuffer else {
-            return
+                return
         }
         
         let commandBuffer = commandQueue.makeCommandBuffer()
         let commandEncoder = commandBuffer?.makeRenderCommandEncoder(descriptor: descriptor)
+        commandEncoder?.setFragmentSamplerState(sampleState, index: 0)
         commandEncoder?.setRenderPipelineState(pipelineState)
         commandEncoder?.setVertexBuffer(vertexBuffer, offset: 0, index: 0)
+        commandEncoder?.setVertexBytes(&filters, length: MemoryLayout<Filters>.stride, index: 1)
+        commandEncoder?.setFragmentTexture(texture, index: 0)
         commandEncoder?.drawIndexedPrimitives(type: .triangle, indexCount: indexes.count, indexType: .uint16, indexBuffer: indexBuffer, indexBufferOffset: 0)
-        //commandEncoder?.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: vertices.count)
         commandEncoder?.endEncoding()
         commandBuffer?.present(drawable)
         commandBuffer?.commit()
