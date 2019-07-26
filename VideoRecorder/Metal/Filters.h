@@ -11,5 +11,6 @@
 
 float4 apply_brightness(float4 color, float brightness);
 float4 apply_contrast(float4 color, float contrast);
+float4 apply_saturation(float4 color, float saturation);
 
 #endif /* Filters_h */

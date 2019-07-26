@@ -26,12 +26,14 @@ struct RasterizerIn {
     float4 color;
     float brightness;
     float contrast;
+    float saturation;
     float2 textureCoordinates;
 };
 
 struct Filters {
     float brightness;
     float contrast;
+    float saturation;
 };
 
 vertex RasterizerIn vertex_shader(const VertexIn vertexIn [[ stage_in ]],
@@ -42,12 +44,13 @@ vertex RasterizerIn vertex_shader(const VertexIn vertexIn [[ stage_in ]],
     rasterizerIn.textureCoordinates = vertexIn.textureCoordinates;
     rasterizerIn.brightness = filters.brightness;
     rasterizerIn.contrast = filters.contrast;
+    rasterizerIn.saturation = filters.saturation;
     
     return rasterizerIn;
 }
 
 fragment half4 fragment_shader(const RasterizerIn rasterizerIn [[ stage_in ]]) {
-    return half4(rasterizerIn.color + rasterizerIn.brightness / 127.0);
+    return half4(rasterizerIn.color + rasterizerIn.brightness);
 }
 
 fragment half4 texture_shader(const RasterizerIn rasterizerIn [[ stage_in ]],
@@ -57,5 +60,6 @@ fragment half4 texture_shader(const RasterizerIn rasterizerIn [[ stage_in ]],
     float4 color = texture.sample(sampler2d, rasterizerIn.textureCoordinates);
     color =  apply_brightness(color, rasterizerIn.brightness);
     color = apply_contrast(color, rasterizerIn.contrast);
+    color = apply_saturation(color, rasterizerIn.saturation);
     return half4(color.r, color.g, color.b, 1.0);
 }

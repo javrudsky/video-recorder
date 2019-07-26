@@ -22,16 +22,23 @@ class ViewRenderer: NSObject  {
     var filters: Filters
     var texture: MTLTexture?
     var sampleState: MTLSamplerState?
+    let kMaxFilterValue: Float = 127.5
     
     var brightness: Float = 0.0 {
         didSet {
-            filters.brightness = brightness
+            filters.brightness = brightness / kMaxFilterValue
         }
     }
     
     var contrast: Float = 0.0 {
         didSet {
-            filters.contrast = contrast
+            filters.contrast = (contrast + kMaxFilterValue) / kMaxFilterValue
+        }
+    }
+    
+    var saturation: Float = 0.0 {
+        didSet {
+            filters.saturation = (saturation + kMaxFilterValue) / kMaxFilterValue
         }
     }
     
