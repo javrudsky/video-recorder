@@ -82,6 +82,7 @@
 				5946780B22D80A6700F94E58 /* VideoRecorderTests */,
 				594677F522D80A6400F94E58 /* Products */,
 			);
+			indentWidth = 3;
 			sourceTree = "<group>";
 		};
 		594677F522D80A6400F94E58 /* Products */ = {
@@ -106,8 +107,10 @@
 				5946780022D80A6700F94E58 /* LaunchScreen.storyboard */,
 				5946780322D80A6700F94E58 /* Info.plist */,
 			);
+			indentWidth = 3;
 			path = VideoRecorder;
 			sourceTree = "<group>";
+			tabWidth = 4;
 		};
 		5946780B22D80A6700F94E58 /* VideoRecorderTests */ = {
 			isa = PBXGroup;

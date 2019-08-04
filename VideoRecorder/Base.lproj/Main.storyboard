@@ -33,7 +33,7 @@
                                             <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="sBf-Fx-g6n" userLabel="brightnessValue">
                                                 <rect key="frame" x="175.5" y="10" width="220.5" height="31"/>
                                                 <connections>
-                                                    <action selector="brightnessChanged:" destination="BYZ-38-t0r" eventType="valueChanged" id="6X5-LQ-bPJ"/>
+                                                    <action selector="filterValueChanged:" destination="BYZ-38-t0r" eventType="valueChanged" id="8mK-v1-oK8"/>
                                                 </connections>
                                             </slider>
                                         </subviews>
@@ -54,7 +54,7 @@
                                             <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="1Qf-25-wew" userLabel="constrastValue">
                                                 <rect key="frame" x="175.5" y="10" width="220.5" height="31"/>
                                                 <connections>
-                                                    <action selector="constrastChanged:" destination="BYZ-38-t0r" eventType="valueChanged" id="nVz-4G-qU3"/>
+                                                    <action selector="filterValueChanged:" destination="BYZ-38-t0r" eventType="valueChanged" id="OuJ-by-I5y"/>
                                                 </connections>
                                             </slider>
                                         </subviews>
@@ -75,7 +75,7 @@
                                             <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="pYY-ca-gZL" userLabel="saturationValue">
                                                 <rect key="frame" x="175.5" y="10" width="220.5" height="31"/>
                                                 <connections>
-                                                    <action selector="saturationChanged:" destination="BYZ-38-t0r" eventType="valueChanged" id="gTN-Md-Z2E"/>
+                                                    <action selector="filterValueChanged:" destination="BYZ-38-t0r" eventType="valueChanged" id="E49-8B-6QE"/>
                                                 </connections>
                                             </slider>
                                         </subviews>

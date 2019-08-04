@@ -9,12 +9,12 @@
 import simd
 
 struct Vertex {
-    var position: float3
-    var textureCoordinates: float2
+   var position: float3
+   var textureCoordinates: float2
 }
 
 struct Filters {
-    var brightness: Float = 0.0
-    var contrast: Float = 0.0
-    var saturation: Float = 0.0
+   var brightness: Float = 0.0
+   var contrast: Float = 0.0
+   var saturation: Float = 0.0
 }
