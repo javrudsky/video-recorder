@@ -12,21 +12,15 @@
 using namespace metal;
 
 constant int ATTR_VERTEX_POSITION_INDEX = 0;
-constant int ATTR_VERTEX_COLOR_INDEX = 1;
-constant int ATTR_TEXTURE_COORD_INDEX = 2;
+constant int ATTR_TEXTURE_COORD_INDEX = 1;
 
 struct VertexIn {
     float4 position [[ attribute(ATTR_VERTEX_POSITION_INDEX) ]];
-    float4 color [[ attribute(ATTR_VERTEX_COLOR_INDEX) ]];
     float2 textureCoordinates [[ attribute(ATTR_TEXTURE_COORD_INDEX) ]];
 };
 
 struct RasterizerIn {
     float4 position [[ position ]];
-    float4 color;
-    float brightness;
-    float contrast;
-    float saturation;
     float2 textureCoordinates;
 };
 
@@ -36,21 +30,12 @@ struct Filters {
     float saturation;
 };
 
-vertex RasterizerIn vertex_shader(const VertexIn vertexIn [[ stage_in ]],
-                               constant Filters &filters [[ buffer(1) ]]) {
+vertex RasterizerIn vertex_shader(const VertexIn vertexIn [[ stage_in ]]) {
     RasterizerIn rasterizerIn;
     rasterizerIn.position = vertexIn.position;
-    rasterizerIn.color = vertexIn.color;
     rasterizerIn.textureCoordinates = vertexIn.textureCoordinates;
-    rasterizerIn.brightness = filters.brightness;
-    rasterizerIn.contrast = filters.contrast;
-    rasterizerIn.saturation = filters.saturation;
     
     return rasterizerIn;
-}
-
-fragment half4 fragment_shader(const RasterizerIn rasterizerIn [[ stage_in ]]) {
-    return half4(rasterizerIn.color + rasterizerIn.brightness);
 }
 
 fragment half4 texture_shader(const RasterizerIn rasterizerIn [[ stage_in ]],
@@ -58,8 +43,21 @@ fragment half4 texture_shader(const RasterizerIn rasterizerIn [[ stage_in ]],
                               texture2d<float> texture [[ texture(0) ]]) {
 
     float4 color = texture.sample(sampler2d, rasterizerIn.textureCoordinates);
-    color =  apply_brightness(color, rasterizerIn.brightness);
-    color = apply_contrast(color, rasterizerIn.contrast);
-    color = apply_saturation(color, rasterizerIn.saturation);
     return half4(color.r, color.g, color.b, 1.0);
+}
+
+kernel void kernel_shader(texture2d<float, access::read> sourceTexture [[texture(0)]],
+                          constant Filters &filters [[ buffer(1) ]],
+                          texture2d<float, access::write> filteredTexture [[texture(1)]],
+                          uint2 position [[ thread_position_in_grid ]]) {
+    
+    if (position.x >= filteredTexture.get_width() || position.y >= filteredTexture.get_height()) {
+        return;
+    }
+    
+    float4 color = sourceTexture.read(position);
+    color =  apply_brightness(color, filters.brightness);
+    color = apply_contrast(color, filters.contrast);
+    color = apply_saturation(color, filters.saturation);
+    filteredTexture.write(color, position);
 }
