@@ -11,7 +11,7 @@
 		594677FD22D80A6400F94E58 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 594677FB22D80A6400F94E58 /* Main.storyboard */; };
 		594677FF22D80A6700F94E58 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 594677FE22D80A6700F94E58 /* Assets.xcassets */; };
 		5946780222D80A6700F94E58 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5946780022D80A6700F94E58 /* LaunchScreen.storyboard */; };
-		5946780D22D80A6700F94E58 /* VideoRecorderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5946780C22D80A6700F94E58 /* VideoRecorderTests.swift */; };
+		5946780D22D80A6700F94E58 /* TextureFilterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5946780C22D80A6700F94E58 /* TextureFilterTests.swift */; };
 		5946781E22DDCF4000F94E58 /* ViewRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5946781C22DDCF4000F94E58 /* ViewRenderer.swift */; };
 		5946781F22DDCF4000F94E58 /* Shader.metal in Sources */ = {isa = PBXBuildFile; fileRef = 5946781D22DDCF4000F94E58 /* Shader.metal */; };
 		5946782122DDD0A500F94E58 /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5946782022DDD0A500F94E58 /* Colors.swift */; };
@@ -42,7 +42,7 @@
 		5946780122D80A6700F94E58 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		5946780322D80A6700F94E58 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5946780822D80A6700F94E58 /* VideoRecorderTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VideoRecorderTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		5946780C22D80A6700F94E58 /* VideoRecorderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoRecorderTests.swift; sourceTree = "<group>"; };
+		5946780C22D80A6700F94E58 /* TextureFilterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextureFilterTests.swift; sourceTree = "<group>"; };
 		5946780E22D80A6700F94E58 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5946781C22DDCF4000F94E58 /* ViewRenderer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewRenderer.swift; sourceTree = "<group>"; };
 		5946781D22DDCF4000F94E58 /* Shader.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = Shader.metal; sourceTree = "<group>"; };
@@ -115,7 +115,7 @@
 		5946780B22D80A6700F94E58 /* VideoRecorderTests */ = {
 			isa = PBXGroup;
 			children = (
-				5946780C22D80A6700F94E58 /* VideoRecorderTests.swift */,
+				5946780C22D80A6700F94E58 /* TextureFilterTests.swift */,
 				5946780E22D80A6700F94E58 /* Info.plist */,
 			);
 			path = VideoRecorderTests;
@@ -255,7 +255,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5946780D22D80A6700F94E58 /* VideoRecorderTests.swift in Sources */,
+				5946780D22D80A6700F94E58 /* TextureFilterTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -409,6 +409,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 45J85HU5GF;
 				INFOPLIST_FILE = VideoRecorder/Info.plist;
@@ -419,6 +420,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.javi.video-recorder";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -428,6 +430,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 45J85HU5GF;
 				INFOPLIST_FILE = VideoRecorder/Info.plist;
@@ -438,6 +441,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.javi.video-recorder";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

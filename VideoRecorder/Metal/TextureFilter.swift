@@ -16,7 +16,7 @@ struct TextureFilterValues {
 
 protocol TextureFilter {
    var value: Float { set get }
-   var filterValue: Float { get }
+   var normalizedValue: Float { get }
 }
 
 extension TextureFilter {
@@ -28,7 +28,7 @@ extension TextureFilter {
 class BaseFilter: TextureFilter {
    fileprivate var clampledValue: Float = 0.0
    fileprivate var computedValue: Float = 0.0
-   var filterValue: Float {
+   var normalizedValue: Float {
       return computedValue
    }
    var value: Float = 0.0
@@ -43,7 +43,12 @@ class BrightnessFilter: BaseFilter {
       get {
          return clampledValue
       }
-   } 
+   }
+   
+   override init() {
+      super.init()
+      self.value = 0.0
+   }
 }
 
 class ContrastFilter: BaseFilter {
@@ -56,6 +61,11 @@ class ContrastFilter: BaseFilter {
          return clampledValue
       }
    }
+   
+   override init() {
+      super.init()
+      self.value = 0.0
+   }
 }
 
 class SaturationFilter: BaseFilter {
@@ -67,6 +77,11 @@ class SaturationFilter: BaseFilter {
       get {
          return clampledValue
       }
+   }
+   
+   override init() {
+      super.init()
+      self.value = 0.0
    }
 }
 

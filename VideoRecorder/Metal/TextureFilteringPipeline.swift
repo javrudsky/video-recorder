@@ -57,9 +57,9 @@ class TextureFilteringPipeline {
          return
       }
       
-      kernelFilters.brightness = filters["BrightnessFilter"]?.filterValue ?? 0.0
-      kernelFilters.saturation = filters["SaturationFilter"]?.filterValue ?? 0.0
-      kernelFilters.contrast = filters["ContrastFilter"]?.filterValue ?? 0.0
+      kernelFilters.brightness = filters["BrightnessFilter"]?.normalizedValue ?? 0.0
+      kernelFilters.saturation = filters["SaturationFilter"]?.normalizedValue ?? 0.0
+      kernelFilters.contrast = filters["ContrastFilter"]?.normalizedValue ?? 0.0
       
       DispatchQueue.global().async {
          
