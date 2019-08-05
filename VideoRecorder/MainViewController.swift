@@ -55,11 +55,6 @@ class MainViewController: UIViewController {
       saturationFilter = SaturationFilter()
       contrastFilter = ContrastFilter()
       
-      // TODO: Fix Filter initialization
-      contrastFilter.value = 0.0
-      saturationFilter.value = 0.0
-      //
-      
       setupUI()
       updateFilteringPipeline()
    }
