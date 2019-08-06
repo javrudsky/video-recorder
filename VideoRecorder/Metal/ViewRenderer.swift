@@ -17,6 +17,9 @@ struct AttributeIndex {
 class ViewRenderer: NSObject  {
    
    var texture: Texture?
+
+   private let kVertexShaderFunction = "vertex_shader"
+   private let kFragmentShaderFunction = "texture_shader"
    
    private let vertices: [Vertex] = [
       Vertex(position: float3(-1.0, 1.0, 0.0), textureCoordinates: float2(0.0, 1.0)),
@@ -31,16 +34,15 @@ class ViewRenderer: NSObject  {
    ]
    
    private var device: MTLDevice
-   private var commandQueue: MTLCommandQueue!
+   private var commandQueue: MTLCommandQueue?
    private var sampleState: MTLSamplerState?
    private var pipelineState: MTLRenderPipelineState?
    private var vertexBuffer: MTLBuffer?
    private var indexBuffer: MTLBuffer?
    
-   
    init(device: MTLDevice) {
       self.device = device
-      self.commandQueue = device.makeCommandQueue()!
+      self.commandQueue = device.makeCommandQueue()
       super.init()
       buildModel()
       buildPipelineState()
@@ -56,8 +58,8 @@ class ViewRenderer: NSObject  {
    
    private func buildPipelineState() {
       let library = device.makeDefaultLibrary()
-      let vertexFunction = library?.makeFunction(name: "vertex_shader")
-      let fragmentFunction = library?.makeFunction(name: "texture_shader")
+      let vertexFunction = library?.makeFunction(name: kVertexShaderFunction)
+      let fragmentFunction = library?.makeFunction(name: kFragmentShaderFunction)
       
       let vertexDescriptor = MTLVertexDescriptor()
       vertexDescriptor.attributes[AttributeIndex.vertexPosition].format = .float3
@@ -69,7 +71,6 @@ class ViewRenderer: NSObject  {
       vertexDescriptor.attributes[AttributeIndex.textureCoordinates].bufferIndex = 0
       
       vertexDescriptor.layouts[0].stride = MemoryLayout<Vertex>.stride
-      
       
       let pipelineDescriptor = MTLRenderPipelineDescriptor()
       pipelineDescriptor.vertexFunction = vertexFunction
@@ -94,7 +95,6 @@ class ViewRenderer: NSObject  {
 
 extension ViewRenderer: MTKViewDelegate {
    func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {
-      
    }
    
    func draw(in view: MTKView) {
@@ -103,6 +103,7 @@ extension ViewRenderer: MTKViewDelegate {
          let descriptor = view.currentRenderPassDescriptor ,
          let indexBuffer = self.indexBuffer,
          let texture = self.texture?.texture,
+         let commandQueue = self.commandQueue,
          let commandBuffer = commandQueue.makeCommandBuffer(),
          let commandEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: descriptor) else {
             return
