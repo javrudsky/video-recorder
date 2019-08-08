@@ -22,9 +22,9 @@ class TextureFilteringPipeline {
    private var kernelFilters: Filters
    private var filtersDefaults: Filters
 
-   private let kBrightnessFilterKey = String(describing: BrightnessFilter.self)
-   private let kContrastFilterKey = String(describing: ContrastFilter.self)
-   private let kSaturationFilterKey = String(describing: SaturationFilter.self)
+   private let kBrightnessFilterKey = TextureFilteringPipeline.key(for: BrightnessFilter.self)
+   private let kContrastFilterKey = TextureFilteringPipeline.key(for: ContrastFilter.self)
+   private let kSaturationFilterKey = TextureFilteringPipeline.key(for: SaturationFilter.self)
 
    init(device: MTLDevice) {
       filters = [String: TextureFilter]()
@@ -38,11 +38,11 @@ class TextureFilteringPipeline {
    }
 
    func set(filter: TextureFilter) {
-      filters[key(for: type(of: filter))] = filter
+      filters[TextureFilteringPipeline.key(for: type(of: filter))] = filter
    }
 
    func clear(filter: TextureFilter.Type) {
-      filters.removeValue(forKey: key(for: filter))
+      filters.removeValue(forKey: TextureFilteringPipeline.key(for: filter))
    }
 
    func clearAllFilters() {
@@ -82,6 +82,8 @@ class TextureFilteringPipeline {
          let threadgroupsPerGrid = MTLSize(width: threadgroupsPerGridWidth,
                                            height: threadgroupsPerGridHeight,
                                            depth: 1)
+
+         /// TODO: Check sampler  state usage
          commandEncoder.setSamplerState(self.sampleState, index: 0)
          commandEncoder.setComputePipelineState(pipelineState)
          commandEncoder.setBytes(&self.kernelFilters, length: MemoryLayout<Filters>.stride, index: 1)
@@ -102,7 +104,7 @@ class TextureFilteringPipeline {
 
 extension TextureFilteringPipeline {
 
-   private func key(for filterType: TextureFilter.Type) -> String {
+   private static func key(for filterType: TextureFilter.Type) -> String {
       return String(describing: filterType)
    }
 
