@@ -89,6 +89,9 @@ class MainViewController: UIViewController {
       }
    }
 
+   @IBAction func filterButtonTap(_ sender: UIButton) {
+   }
+
    // MARK: Filtering
    private func updateFilteringPipeline() {
       updateFilteringPipeline(updatedFilter: brightnessFilter)
@@ -111,15 +114,12 @@ class MainViewController: UIViewController {
    private func setupUI() {
       setupFilterSlider(slider: brightnessSlider)
       setFilterLabelTitle(label: brightnessLabel, value: brightnessFilter.value)
-      brightnessLabel.backgroundColor = UIColor.white
 
       setupFilterSlider(slider: contrastSlider)
       setFilterLabelTitle(label: contrastLabel, value: contrastSlider.value)
-      contrastLabel.backgroundColor = UIColor.white
 
       setupFilterSlider(slider: saturationSlider)
       setFilterLabelTitle(label: saturationLabel, value: saturationSlider.value)
-      saturationLabel.backgroundColor = UIColor.white
    }
 
    private func setupFilterSlider(slider: UISlider) {
