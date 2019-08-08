@@ -19,7 +19,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view alpha="0.29999999999999999" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="inv-Ec-Ajt" userLabel="controlsBg">
-                                <rect key="frame" x="10" y="670.5" width="394" height="191.5"/>
+                                <rect key="frame" x="0.0" y="670.5" width="414" height="191.5"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </view>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="GiM-ad-tfT" userLabel="controls">
@@ -79,8 +79,8 @@
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="inv-Ec-Ajt" firstAttribute="leading" secondItem="GiM-ad-tfT" secondAttribute="leading" id="56Q-q3-f36"/>
-                            <constraint firstItem="inv-Ec-Ajt" firstAttribute="width" secondItem="GiM-ad-tfT" secondAttribute="width" id="7Wz-9O-mOE"/>
+                            <constraint firstItem="inv-Ec-Ajt" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="56Q-q3-f36"/>
+                            <constraint firstItem="inv-Ec-Ajt" firstAttribute="width" secondItem="6Tk-OE-BBY" secondAttribute="width" id="7Wz-9O-mOE"/>
                             <constraint firstItem="inv-Ec-Ajt" firstAttribute="top" secondItem="GiM-ad-tfT" secondAttribute="top" id="9JS-hX-8ND"/>
                             <constraint firstItem="inv-Ec-Ajt" firstAttribute="height" secondItem="GiM-ad-tfT" secondAttribute="height" id="FzC-Rl-vqM"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="GiM-ad-tfT" secondAttribute="trailing" constant="10" id="Njn-CT-lER"/>
