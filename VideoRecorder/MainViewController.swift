@@ -9,22 +9,28 @@
 import UIKit
 import MetalKit
 
-struct FilterName {
-   static let brightness = "Brightness"
-   static let contrast = "Contrast"
-   static let saturation = "Contrast"
-}
-
 class MainViewController: UIViewController {
 
-   @IBOutlet weak var brightnessLabel: UILabel!
-   @IBOutlet weak var brightnessSlider: UISlider!
+   @IBOutlet var filterSliders: [UISlider]!
+   @IBOutlet var filterLabels: [UILabel]!
 
-   @IBOutlet weak var contrastLabel: UILabel!
-   @IBOutlet weak var contrastSlider: UISlider!
+   struct FilterIndex {
+      static let brightess = 0
+      static let contrast = 1
+      static let saturatin = 2
+   }
 
-   @IBOutlet weak var saturationLabel: UILabel!
-   @IBOutlet weak var saturationSlider: UISlider!
+   let filterNames = [
+      "Brightness",
+      "Contrast",
+      "Saturation"
+   ]
+
+   var filters: [TextureFilter] = [
+      BrightnessFilter(),
+      ContrastFilter(),
+      SaturationFilter()
+   ]
 
    var metalView: MTKView {
       if let metalView = view as? MTKView {
@@ -35,11 +41,6 @@ class MainViewController: UIViewController {
 
    var filteringPipeling: TextureFilteringPipeline?
    var renderer: ViewRenderer?
-
-   var brightnessFilter: TextureFilter!
-   var saturationFilter: TextureFilter!
-   var contrastFilter: TextureFilter!
-
    var texture: Texture!
 
    override func viewDidLoad() {
@@ -54,49 +55,40 @@ class MainViewController: UIViewController {
          metalView.clearColor = Colors.yellow
          metalView.delegate = renderer
       }
-      brightnessFilter = BrightnessFilter()
-      saturationFilter = SaturationFilter()
-      contrastFilter = ContrastFilter()
 
       setupUI()
       updateFilteringPipeline()
    }
 
    @IBAction func filterValueChanged(_ sender: UISlider) {
-      var label: UILabel?
-      var filter: TextureFilter?
-
-      let value = sender.value
-      switch sender {
-      case brightnessSlider:
-         filter = brightnessFilter
-         label = brightnessLabel
-      case contrastSlider:
-         filter = contrastFilter
-         label = contrastLabel
-      case saturationSlider:
-         filter = saturationFilter
-         label = saturationLabel
-      default:
-         print("Not available filter")
-      }
-
-      filter?.value = value
-
-      if let filter = filter, let label = label {
-         setFilterLabelTitle(label: label, value: value)
-         updateFilteringPipeline(updatedFilter: filter)
+      if let index = filterSliders.firstIndex(of: sender) {
+         updateFilter(index: index, value: filterSliders[index].value)
       }
    }
 
-   @IBAction func filterButtonTap(_ sender: UIButton) {
+   @IBAction func resetFiltersButtonTap(_ sender: UIButton) {
+      resetFilters()
    }
 
    // MARK: Filtering
+   private func resetFilters() {
+      for index in 0..<filters.count {
+         filterSliders[index].value = TextureFilterValues.default
+         updateFilter(index: index, value: TextureFilterValues.default)
+      }
+   }
+
+   private func updateFilter(index: Int, value: Float) {
+      var filter: TextureFilter = filters[index]
+      filter.value = value
+      setFilterLabelTitle(index: index, value: value)
+      updateFilteringPipeline(updatedFilter: filter)
+   }
+
    private func updateFilteringPipeline() {
-      updateFilteringPipeline(updatedFilter: brightnessFilter)
-      updateFilteringPipeline(updatedFilter: contrastFilter)
-      updateFilteringPipeline(updatedFilter: saturationFilter)
+      for filter in filters {
+         updateFilteringPipeline(updatedFilter: filter)
+      }
    }
 
    private func updateFilteringPipeline(updatedFilter filter: TextureFilter) {
@@ -112,14 +104,10 @@ class MainViewController: UIViewController {
 
    // MARK: UI
    private func setupUI() {
-      setupFilterSlider(slider: brightnessSlider)
-      setFilterLabelTitle(label: brightnessLabel, value: brightnessFilter.value)
-
-      setupFilterSlider(slider: contrastSlider)
-      setFilterLabelTitle(label: contrastLabel, value: contrastSlider.value)
-
-      setupFilterSlider(slider: saturationSlider)
-      setFilterLabelTitle(label: saturationLabel, value: saturationSlider.value)
+      for index in 0..<filters.count {
+         setupFilterSlider(slider: filterSliders[index])
+         setFilterLabelTitle(index: index, value: filterSliders[index].value)
+      }
    }
 
    private func setupFilterSlider(slider: UISlider) {
@@ -128,27 +116,12 @@ class MainViewController: UIViewController {
       slider.value = TextureFilterValues.default
    }
 
-   private func setFilterLabelTitle(label: UILabel, value: Float) {
-      let filterName = titleForFilterLabel(label: label)
-      label.text = "\(filterName) (\(decimalFormat(value)))"
+   private func setFilterLabelTitle(index: Int, value: Float) {
+      let filterName = filterNames[index]
+      filterLabels[index].text = "\(filterName) (\(decimalFormat(value)))"
    }
 
    private func decimalFormat(_ value: Float) -> String {
       return String(format: "%.01f", value)
-   }
-
-   private func titleForFilterLabel(label: UILabel) -> String {
-      var title = ""
-      switch label {
-      case brightnessLabel:
-         title = FilterName.brightness
-      case contrastLabel:
-         title = FilterName.contrast
-      case saturationLabel:
-         title = FilterName.saturation
-      default:
-         print("Should not reach here")
-      }
-      return title
    }
 }
