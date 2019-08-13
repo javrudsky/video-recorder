@@ -36,6 +36,11 @@ struct Texture {
       self.device = device
       self.texture = textureFrom(descriptor: descriptor)
    }
+
+   init(from pixelBuffer: CVPixelBuffer, on device: MTLDevice) {
+      self.device = device
+      self.texture = textureFrom(pixelBuffer: pixelBuffer)
+   }
 }
 
 extension Texture {
@@ -73,4 +78,31 @@ extension Texture {
 
       return device.makeTexture(descriptor: mtlDescriptor)
    }
+
+   private func textureFrom(pixelBuffer: CVPixelBuffer) -> MTLTexture? {
+
+      let width = CVPixelBufferGetWidth(pixelBuffer)
+      let height = CVPixelBufferGetHeight(pixelBuffer)
+
+      var textureCache: CVMetalTextureCache?
+      if CVMetalTextureCacheCreate(kCFAllocatorDefault, nil, self.device, nil, &textureCache) != kCVReturnSuccess {
+         return nil
+      }
+      var cvTextureOut: CVMetalTexture?
+      CVMetalTextureCacheCreateTextureFromImage(kCFAllocatorDefault,
+                                                textureCache!,
+                                                pixelBuffer,
+                                                nil,
+                                                .bgra8Unorm,
+                                                width,
+                                                height,
+                                                0,
+                                                &cvTextureOut)
+      guard let cvTexture = cvTextureOut, let texture = CVMetalTextureGetTexture(cvTexture) else {
+         return nil
+      }
+      CVMetalTextureCacheFlush(textureCache!, 0)
+      return texture
+   }
+
 }

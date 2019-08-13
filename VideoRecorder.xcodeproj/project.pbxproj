@@ -47,7 +47,7 @@
 		5946781C22DDCF4000F94E58 /* ViewRenderer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewRenderer.swift; sourceTree = "<group>"; };
 		5946781D22DDCF4000F94E58 /* Shader.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = Shader.metal; sourceTree = "<group>"; };
 		5946782022DDD0A500F94E58 /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
-		5946782222DDD18C00F94E58 /* MainViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
+		5946782222DDD18C00F94E58 /* MainViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 3; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; tabWidth = 3; };
 		5946783B22E1C93900F94E58 /* Types.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Types.swift; sourceTree = "<group>"; };
 		5946783F22E1CBDC00F94E58 /* jeep.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = jeep.jpg; sourceTree = "<group>"; };
 		5946784222E33C1300F94E58 /* Filters.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Filters.metal; sourceTree = "<group>"; };
@@ -84,6 +84,7 @@
 			);
 			indentWidth = 3;
 			sourceTree = "<group>";
+			tabWidth = 3;
 		};
 		594677F522D80A6400F94E58 /* Products */ = {
 			isa = PBXGroup;
@@ -110,7 +111,7 @@
 			indentWidth = 3;
 			path = VideoRecorder;
 			sourceTree = "<group>";
-			tabWidth = 4;
+			tabWidth = 3;
 		};
 		5946780B22D80A6700F94E58 /* VideoRecorderTests */ = {
 			isa = PBXGroup;
