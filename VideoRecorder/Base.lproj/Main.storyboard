@@ -14,10 +14,13 @@
         <scene sceneID="tne-QT-ifu">
             <objects>
                 <viewController id="BYZ-38-t0r" customClass="MainViewController" customModule="VideoRecorder" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC" customClass="MTKView">
+                    <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
+                            <mtkView contentMode="scaleToFill" colorPixelFormat="BGRA8Unorm" depthStencilPixelFormat="Invalid" translatesAutoresizingMaskIntoConstraints="NO" id="6CT-5W-ylL" userLabel="metalView">
+                                <rect key="frame" x="0.0" y="44" width="414" height="818"/>
+                            </mtkView>
                             <view alpha="0.29999999999999999" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="inv-Ec-Ajt" userLabel="controlsBg">
                                 <rect key="frame" x="0.0" y="670.5" width="414" height="191.5"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -81,15 +84,20 @@
                         <constraints>
                             <constraint firstItem="inv-Ec-Ajt" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="56Q-q3-f36"/>
                             <constraint firstItem="inv-Ec-Ajt" firstAttribute="width" secondItem="6Tk-OE-BBY" secondAttribute="width" id="7Wz-9O-mOE"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="6CT-5W-ylL" secondAttribute="trailing" id="8T7-s6-CZz"/>
                             <constraint firstItem="inv-Ec-Ajt" firstAttribute="top" secondItem="GiM-ad-tfT" secondAttribute="top" id="9JS-hX-8ND"/>
                             <constraint firstItem="inv-Ec-Ajt" firstAttribute="height" secondItem="GiM-ad-tfT" secondAttribute="height" id="FzC-Rl-vqM"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="GiM-ad-tfT" secondAttribute="trailing" constant="10" id="Njn-CT-lER"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="GiM-ad-tfT" secondAttribute="bottom" id="Rdr-6D-UbP"/>
+                            <constraint firstItem="6CT-5W-ylL" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="XPx-Zh-eg7"/>
                             <constraint firstItem="GiM-ad-tfT" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="10" id="jRD-pC-E1O"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="6CT-5W-ylL" secondAttribute="bottom" id="lPm-A5-GsG"/>
+                            <constraint firstItem="6CT-5W-ylL" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="o4z-YG-9Vx"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
                     <connections>
+                        <outlet property="metalView" destination="6CT-5W-ylL" id="CCR-h2-hyV"/>
                         <outletCollection property="filterSliders" destination="sBf-Fx-g6n" collectionClass="NSMutableArray" id="Str-L8-mjc"/>
                         <outletCollection property="filterSliders" destination="1Qf-25-wew" collectionClass="NSMutableArray" id="XTu-OH-zz0"/>
                         <outletCollection property="filterSliders" destination="pYY-ca-gZL" collectionClass="NSMutableArray" id="d2S-t2-hBq"/>
