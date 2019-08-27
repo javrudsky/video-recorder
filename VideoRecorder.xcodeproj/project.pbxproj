@@ -17,7 +17,6 @@
 		5946782122DDD0A500F94E58 /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5946782022DDD0A500F94E58 /* Colors.swift */; };
 		5946782322DDD18C00F94E58 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5946782222DDD18C00F94E58 /* MainViewController.swift */; };
 		5946783C22E1C93900F94E58 /* Types.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5946783B22E1C93900F94E58 /* Types.swift */; };
-		5946784022E1CBDC00F94E58 /* jeep.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 5946783F22E1CBDC00F94E58 /* jeep.jpg */; };
 		5946784322E33C1300F94E58 /* Filters.metal in Sources */ = {isa = PBXBuildFile; fileRef = 5946784222E33C1300F94E58 /* Filters.metal */; };
 		5946784922ECCC9900F94E58 /* TextureFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5946784822ECCC9900F94E58 /* TextureFilter.swift */; };
 		5946784B22ECCD7200F94E58 /* TextureFilteringPipeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5946784A22ECCD7200F94E58 /* TextureFilteringPipeline.swift */; };
@@ -51,7 +50,6 @@
 		5946782022DDD0A500F94E58 /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
 		5946782222DDD18C00F94E58 /* MainViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 3; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; tabWidth = 3; };
 		5946783B22E1C93900F94E58 /* Types.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Types.swift; sourceTree = "<group>"; };
-		5946783F22E1CBDC00F94E58 /* jeep.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = jeep.jpg; sourceTree = "<group>"; };
 		5946784222E33C1300F94E58 /* Filters.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Filters.metal; sourceTree = "<group>"; };
 		5946784422E33D5600F94E58 /* Filters.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Filters.h; sourceTree = "<group>"; };
 		5946784822ECCC9900F94E58 /* TextureFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextureFilter.swift; sourceTree = "<group>"; };
@@ -110,7 +108,6 @@
 				5946782022DDD0A500F94E58 /* Colors.swift */,
 				598F9BDE230C063F00F0E4C0 /* OrientationDetector.swift */,
 				594677FB22D80A6400F94E58 /* Main.storyboard */,
-				5946783F22E1CBDC00F94E58 /* jeep.jpg */,
 				594677FE22D80A6700F94E58 /* Assets.xcassets */,
 				5946780022D80A6700F94E58 /* LaunchScreen.storyboard */,
 				5946780322D80A6700F94E58 /* Info.plist */,
@@ -242,7 +239,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				5946780222D80A6700F94E58 /* LaunchScreen.storyboard in Resources */,
-				5946784022E1CBDC00F94E58 /* jeep.jpg in Resources */,
 				594677FF22D80A6700F94E58 /* Assets.xcassets in Resources */,
 				594677FD22D80A6400F94E58 /* Main.storyboard in Resources */,
 			);

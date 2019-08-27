@@ -10,24 +10,21 @@ import UIKit
 import MetalKit
 import AVFoundation
 
-
 class MainViewController: UIViewController {
 
    @IBOutlet var filterSliders: [UISlider]!
    @IBOutlet var filterLabels: [UILabel]!
    @IBOutlet weak var metalView: MTKView!
 
-   struct FilterIndex {
+    @IBOutlet weak var orientationIcon: UIImageView!
+    @IBOutlet var icons: [UIImageView]!
+    @IBOutlet weak var fpsLabel: UILabel!
+
+    struct FilterIndex {
       static let brightess = 0
       static let contrast = 1
       static let saturatin = 2
    }
-
-   let filterNames = [
-      "Brightness",
-      "Contrast",
-      "Saturation"
-   ]
 
    var filters: [TextureFilter] = [
       BrightnessFilter(),
@@ -60,6 +57,7 @@ class MainViewController: UIViewController {
       orientationDetector.orientationChangedHandler = { newOrientation in
          self.handle(orientation: newOrientation)
       }
+      orientationDetector.start()
    }
 
    @IBAction func filterValueChanged(_ sender: UISlider) {
@@ -114,8 +112,7 @@ class MainViewController: UIViewController {
    }
 
    private func setFilterLabelTitle(index: Int, value: Float) {
-      let filterName = filterNames[index]
-      filterLabels[index].text = "\(filterName) (\(decimalFormat(value)))"
+      filterLabels[index].text = "\(decimalFormat(value))"
    }
 
    private func decimalFormat(_ value: Float) -> String {
@@ -123,6 +120,28 @@ class MainViewController: UIViewController {
    }
 
    private func handle(orientation: BasicOrientation) {
+      var radians: Float = 0.0
+      if orientation == .landscape {
+         radians = .pi / 2.0
+      }
+      rotateImages(to: radians)
+    }
+
+   private func rotateImages(to angleInRadians: Float) {
+      DispatchQueue.main.async {
+         let transformation = CGAffineTransform(rotationAngle: CGFloat(angleInRadians))
+         UIView.animate(withDuration: 1.0, animations: {
+
+            for icon in self.icons {
+               icon.transform = transformation
+            }
+            for label in self.filterLabels {
+                label.transform = transformation
+            }
+
+            self.fpsLabel.transform = transformation
+         })
+      }
    }
 
    // MARK: VideoCamera
@@ -136,6 +155,4 @@ class MainViewController: UIViewController {
          applyFilters(to: texture)
       }
    }
-
-
 }
