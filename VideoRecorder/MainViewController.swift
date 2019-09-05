@@ -99,6 +99,7 @@ class MainViewController: UIViewController {
 
    // MARK: UI
    private func setupUI() {
+      fpsLabel.text = "0"
       for index in 0..<filters.count {
          setupFilterSlider(slider: filterSliders[index])
          setFilterLabelTitle(index: index, value: filterSliders[index].value)
@@ -144,6 +145,8 @@ class MainViewController: UIViewController {
       }
    }
 
+   
+
    // MARK: VideoCamera
    private func handleVideoOutput(frame: CVPixelBuffer) {
       guard let device = self.device else {
@@ -154,5 +157,15 @@ class MainViewController: UIViewController {
       if texture.texture != nil {
          applyFilters(to: texture)
       }
+
+      self.displayFps()
+
    }
+
+   private func displayFps() {
+      DispatchQueue.main.async {
+         self.fpsLabel.text = "\(self.camera.currentFps)"
+      }
+   }
+
 }

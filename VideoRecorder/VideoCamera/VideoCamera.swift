@@ -10,7 +10,7 @@ import Foundation
 import AVFoundation
 import UIKit
 
-typealias VideoOutputHandler = (CVPixelBuffer)->Void
+typealias VideoOutputHandler = (CVPixelBuffer) -> Void
 
 class VideoCamera: NSObject {
    var videoOutputHandler: VideoOutputHandler?
@@ -26,19 +26,25 @@ class VideoCamera: NSObject {
    private var connection: AVCaptureConnection?
 
    // Communicate with the session and other session objects on this queue.
-   private let sessionQueue = DispatchQueue(label: "session queue")
-   private let dataOutputQueue = DispatchQueue(label: "VideoDataQueue", qos: .userInitiated, attributes: [], autoreleaseFrequency: .workItem)
+   private let sessionQueue = DispatchQueue(label: "javi.vc.sessionQueue")
+   private let dataOutputQueue = DispatchQueue(label: "javi.vc.videoDataQueue",
+                                               qos: .userInitiated,
+                                               attributes: [],
+                                               autoreleaseFrequency: .workItem)
    private let videoDataOutput = AVCaptureVideoDataOutput()
    private var setupResult: SessionSetupResult = .success
 
    @objc dynamic var videoDeviceInput: AVCaptureDeviceInput!
 
+   private let fpsCalculator = FpsCalculator()
 
+   var currentFps: Int {
+      return fpsCalculator.fps
+   }
 
    func askCameraPermissions() {
       switch AVCaptureDevice.authorizationStatus(for: .video) {
       case .authorized:
-         // The user has previously granted access to the camera.
          break
 
       case .notDetermined:
@@ -51,7 +57,6 @@ class VideoCamera: NSObject {
          })
 
       default:
-         // The user has previously denied access.
          setupResult = .notAuthorized
       }
 
@@ -60,101 +65,71 @@ class VideoCamera: NSObject {
       }
    }
 
-   func configureSession() {
+   private func configureSession() {
       if setupResult != .success {
          return
       }
 
       session.beginConfiguration()
 
-      /*
-       Do not create an AVCaptureMovieFileOutput when setting up the session because
-       Live Photo is not supported when AVCaptureMovieFileOutput is added to the session.
-       */
-      session.sessionPreset = .hd1920x1080
-
-      // Add video input.
-      do {
-         var defaultVideoDevice: AVCaptureDevice?
-
-         // Choose the back dual camera, if available, otherwise default to a wide angle camera.
-
-         if let dualCameraDevice = AVCaptureDevice.default(.builtInDualCamera, for: .video, position: .back) {
-            defaultVideoDevice = dualCameraDevice
-         } else if let backCameraDevice = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back) {
-            // If a rear dual camera is not available, default to the rear wide angle camera.
-            defaultVideoDevice = backCameraDevice
-         } else if let frontCameraDevice = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .front) {
-            // If the rear wide angle camera isn't available, default to the front wide angle camera.
-            defaultVideoDevice = frontCameraDevice
-         }
-         guard let videoDevice = defaultVideoDevice else {
-            print("Default video device is unavailable.")
-            setupResult = .configurationFailed
-            session.commitConfiguration()
-            return
-         }
-
-         let videoDeviceInput = try AVCaptureDeviceInput(device: videoDevice)
-
-         if session.canAddInput(videoDeviceInput) {
-            session.addInput(videoDeviceInput)
-            self.videoDeviceInput = videoDeviceInput
-
-            DispatchQueue.main.async {
-               /*
-                Dispatch video streaming to the main queue because AVCaptureVideoPreviewLayer is the backing layer for PreviewView.
-                You can manipulate UIView only on the main thread.
-                Note: As an exception to the above rule, it's not necessary to serialize video orientation changes
-                on the AVCaptureVideoPreviewLayer’s connection with other session manipulation.
-
-                Use the window scene's orientation as the initial video orientation. Subsequent orientation changes are
-                handled by CameraViewController.viewWillTransition(to:with:).
-                */
-               //               var initialVideoOrientation: AVCaptureVideoOrientation = .portrait
-               //               if self.windowOrientation != .unknown {
-               //                  if let videoOrientation = AVCaptureVideoOrientation(interfaceOrientation: self.windowOrientation) {
-               //                     initialVideoOrientation = videoOrientation
-               //                  }
-               //               }
-
-               //               self.previewView.videoPreviewLayer.connection?.videoOrientation = initialVideoOrientation
-
-
-            }
-         } else {
-            print("Couldn't add video device input to the session.")
-            setupResult = .configurationFailed
-            session.commitConfiguration()
-            return
-         }
-
-         // Add a video data output
-         if session.canAddOutput(videoDataOutput) {
-            session.addOutput(videoDataOutput)
-            videoDataOutput.videoSettings = [kCVPixelBufferPixelFormatTypeKey as String: Int(kCVPixelFormatType_32BGRA)]
-            videoDataOutput.setSampleBufferDelegate(self, queue: dataOutputQueue)
-         } else {
-            print("Could not add video data output to the session")
-            setupResult = .configurationFailed
-            session.commitConfiguration()
-            return
-         }
-      } catch {
-         print("Couldn't create video device input: \(error)")
-         setupResult = .configurationFailed
-         session.commitConfiguration()
+      guard let videoDevice = chooseVideoDevice() else {
+         sessionSetupFail(reason: "Default video device is unavailable.")
          return
       }
 
+      let captureDeviceInputResult = captureDevice(captureDevice: videoDevice)
+      guard let videoDeviceInput = captureDeviceInputResult.captureDeviceInput else {
+         sessionSetupFail(reason: "Couldn't create video device input: " +
+            "\(captureDeviceInputResult.errorMessage ?? "Unknown error")")
+         return
+      }
+
+      if !add(inputDevice: videoDeviceInput) {
+         sessionSetupFail(reason: "Couldn't add video device input to the session.")
+         return
+      }
+
+      if !add(videoDataOutput: videoDataOutput) {
+         sessionSetupFail(reason: "Could not add video data output to the session")
+         return
+      }
+      setup(videoDataOutput: videoDataOutput)
+      configureCameraForHighestFrameRate(device: videoDevice)
+
       session.commitConfiguration()
       session.startRunning()
-      if self.videoDataOutput.connections.count > 0 {
-         connection = self.videoDataOutput.connections[0]
-         connection!.automaticallyAdjustsVideoMirroring = false
+      initialConnectionSetup()
+   }
 
-         connection!.videoOrientation = .portraitUpsideDown
-         connection!.isVideoMirrored = true
+   private func configureCameraForHighestFrameRate(device: AVCaptureDevice) {
+
+      var bestFormat: AVCaptureDevice.Format?
+      var bestFrameRateRange: AVFrameRateRange?
+
+      for format in device.formats where format.description.contains("1080") {
+         for range in format.videoSupportedFrameRateRanges {
+            if range.maxFrameRate > bestFrameRateRange?.maxFrameRate ?? 0 {
+               bestFormat = format
+               bestFrameRateRange = range
+            }
+         }
+      }
+
+      if let bestFormat = bestFormat,
+         let bestFrameRateRange = bestFrameRateRange {
+         do {
+            try device.lockForConfiguration()
+
+            // Set the device's active format.
+            device.activeFormat = bestFormat
+            // Set the device's min/max frame duration.
+            let duration = bestFrameRateRange.minFrameDuration
+            device.activeVideoMinFrameDuration = duration
+            device.activeVideoMaxFrameDuration = duration
+            device.unlockForConfiguration()
+         } catch {
+            // Handle error.
+         }
       }
    }
 
@@ -165,7 +140,10 @@ class VideoCamera: NSObject {
                orientation.isPortrait || orientation.isLandscape else {
                   return
             }
-            connection.videoOrientation = newVideoOrientation
+            sessionQueue.async {
+               connection.videoOrientation = newVideoOrientation
+            }
+
          }
       }
    }
@@ -176,9 +154,134 @@ extension VideoCamera: AVCaptureVideoDataOutputSampleBufferDelegate {
                       didOutput sampleBuffer: CMSampleBuffer,
                       from connection: AVCaptureConnection) {
 
-      if let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer),
-         let videoOutputHandler = self.videoOutputHandler {
+      if let videoOutputHandler = self.videoOutputHandler,
+         let pixelBuffer: CVPixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) {
          videoOutputHandler(pixelBuffer)
+      }
+      fpsCalculator.updateFrameTime()
+   }
+
+   func captureOutput(_ output: AVCaptureOutput,
+                      didDrop sampleBuffer: CMSampleBuffer,
+                      from connection: AVCaptureConnection) {
+      print("dropped frame!!!")
+   }
+}
+
+// MARK: Choosing Video Camera
+extension VideoCamera {
+   private func chooseVideoDevice() -> AVCaptureDevice? {
+      var videoDevice: AVCaptureDevice?
+      if let dualCameraDevice = dualCamera() {
+         videoDevice = dualCameraDevice
+      } else if let backCameraDevice = backCamera() {
+         videoDevice = backCameraDevice
+      } else if let frontCameraDevice = frontCamera() {
+         videoDevice = frontCameraDevice
+      }
+      return videoDevice
+   }
+
+   private func dualCamera() -> AVCaptureDevice? {
+      return AVCaptureDevice.default(.builtInDualCamera,
+                                     for: .video,
+                                     position: .back)
+   }
+
+   private func backCamera() -> AVCaptureDevice? {
+      return AVCaptureDevice.default(.builtInWideAngleCamera,
+                                     for: .video,
+                                     position: .back)
+   }
+
+   private func frontCamera() -> AVCaptureDevice? {
+      return AVCaptureDevice.default(.builtInWideAngleCamera,
+                                     for: .video,
+                                     position: .front)
+   }
+}
+
+// MARK: Initial session setup
+extension VideoCamera {
+   private func captureDevice(
+      captureDevice: AVCaptureDevice) -> (captureDeviceInput: AVCaptureDeviceInput?, errorMessage: String?) {
+
+      var captureDeviceInput: AVCaptureDeviceInput?
+      var errorMessage: String?
+      do {
+         captureDeviceInput = try AVCaptureDeviceInput(device: captureDevice)
+      } catch {
+         errorMessage = error.localizedDescription
+      }
+      return (captureDeviceInput: captureDeviceInput, errorMessage: errorMessage)
+   }
+
+   private func add(inputDevice: AVCaptureDeviceInput) -> Bool {
+      if session.canAddInput(inputDevice) {
+         session.addInput(inputDevice)
+         self.videoDeviceInput = inputDevice
+         return true
+      }
+      return false
+   }
+
+   private func add(videoDataOutput: AVCaptureVideoDataOutput) -> Bool {
+      if session.canAddOutput(videoDataOutput) {
+         session.addOutput(videoDataOutput)
+         return true
+      }
+      return false
+   }
+
+   private func setup(videoDataOutput: AVCaptureVideoDataOutput) {
+      videoDataOutput.videoSettings = [kCVPixelBufferPixelFormatTypeKey as String: Int(kCVPixelFormatType_32BGRA)]
+      videoDataOutput.setSampleBufferDelegate(self, queue: dataOutputQueue)
+   }
+
+   private func sessionSetupFail(reason: String? = nil) {
+      if let message = reason {
+         print(message)
+      }
+      setupResult = .configurationFailed
+      session.commitConfiguration()
+   }
+}
+
+// MARK: Initial connection setup
+extension VideoCamera {
+   private func initialConnectionSetup() {
+      if self.videoDataOutput.connections.count > 0 {
+         connection = self.videoDataOutput.connections[0]
+         if let connection = connection {
+            connection.automaticallyAdjustsVideoMirroring = false
+            connection.videoOrientation = .portraitUpsideDown
+            connection.isVideoMirrored = true
+         }
+      }
+   }
+}
+
+// MARK: Calc FPS
+class FpsCalculator {
+   private var lastFrameTime: TimeInterval = 0
+   private var lastFps: Int = 0
+   private var frameCounter: TimeInterval = 0
+   private var elapsedTime: TimeInterval = 0.0
+   private let kFrameCountToAverage: TimeInterval = 0.0
+
+   var fps: Int {
+      return lastFps
+   }
+
+   func updateFrameTime() {
+      frameCounter += 1
+      let time = Date().timeIntervalSince1970
+      elapsedTime += time - lastFrameTime
+      lastFrameTime = time
+      if frameCounter == kFrameCountToAverage, elapsedTime > 0 {
+         lastFps = Int(1 / (elapsedTime / kFrameCountToAverage))
+         frameCounter = 0
+         elapsedTime = 0.0
       }
    }
 }
