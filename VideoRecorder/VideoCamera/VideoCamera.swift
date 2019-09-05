@@ -263,11 +263,10 @@ extension VideoCamera {
 
 // MARK: Calc FPS
 class FpsCalculator {
-   private var lastFrameTime: TimeInterval = 0
+   private var lastFrameTime: TimeInterval = Date().timeIntervalSince1970
    private var lastFps: Int = 0
    private var frameCounter: TimeInterval = 0
-   private var elapsedTime: TimeInterval = 0.0
-   private let kFrameCountToAverage: TimeInterval = 0.0
+   private let kFrameCountToAverage: TimeInterval = 10.0
 
    var fps: Int {
       return lastFps
@@ -275,13 +274,14 @@ class FpsCalculator {
 
    func updateFrameTime() {
       frameCounter += 1
-      let time = Date().timeIntervalSince1970
-      elapsedTime += time - lastFrameTime
-      lastFrameTime = time
-      if frameCounter == kFrameCountToAverage, elapsedTime > 0 {
-         lastFps = Int(1 / (elapsedTime / kFrameCountToAverage))
+      if frameCounter == kFrameCountToAverage {
+         let time = Date().timeIntervalSince1970
+         let elapsedTime = time - lastFrameTime
+         if elapsedTime > 0 {
+            lastFps = Int(1 / (elapsedTime / kFrameCountToAverage))
+         }
+         lastFrameTime = time
          frameCounter = 0
-         elapsedTime = 0.0
       }
    }
 }
