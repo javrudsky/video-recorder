@@ -13,6 +13,10 @@ import UIKit
 typealias VideoOutputHandler = (CVPixelBuffer) -> Void
 
 class VideoCamera: NSObject {
+
+   private let kVideoWidth = 1080
+   private let kDesiredFrameRate: Double = 60.0
+
    var videoOutputHandler: VideoOutputHandler?
 
    private enum SessionSetupResult {
@@ -24,6 +28,7 @@ class VideoCamera: NSObject {
    private let session = AVCaptureSession()
    private var isSessionRunning = false
    private var connection: AVCaptureConnection?
+
 
    // Communicate with the session and other session objects on this queue.
    private let sessionQueue = DispatchQueue(label: "javi.vc.sessionQueue")
@@ -40,6 +45,10 @@ class VideoCamera: NSObject {
 
    var currentFps: Int {
       return fpsCalculator.fps
+   }
+
+   override init() {
+
    }
 
    func askCameraPermissions() {
@@ -94,41 +103,55 @@ class VideoCamera: NSObject {
          return
       }
       setup(videoDataOutput: videoDataOutput)
-      configureCameraForHighestFrameRate(device: videoDevice)
+      setInitialVideoFormat(for: videoDevice)
 
       session.commitConfiguration()
       session.startRunning()
       initialConnectionSetup()
    }
 
-   private func configureCameraForHighestFrameRate(device: AVCaptureDevice) {
+   private func hasDesiredResolution(format: CMFormatDescription) -> Bool {
+      let dimension = CMVideoFormatDescriptionGetDimensions(format)
+      if orientation.isLandscape {
+         return dimension.height == kVideoWidth
+      }
+      return dimension.width == kVideoWidth
+   }
+
+   private func isResolution(_ resolutionA: CMVideoDimensions, betterThan resolutionB: CMVideoDimensions) -> Bool {
+      return resolutionA.height >= resolutionB.height && resolutionA.width >= resolutionB.width
+   }
+
+   private func setInitialVideoFormat(for device: AVCaptureDevice) {
 
       var bestFormat: AVCaptureDevice.Format?
+      var bestResolution: CMVideoDimensions?
       var bestFrameRateRange: AVFrameRateRange?
 
-      for format in device.formats where format.description.contains("1080") {
-         for range in format.videoSupportedFrameRateRanges {
-            if range.maxFrameRate > bestFrameRateRange?.maxFrameRate ?? 0 {
-               bestFormat = format
+      for format in device.formats where hasDesiredResolution(format: format.formatDescription) {
+         if let range = format.videoSupportedFrameRateRanges.first (where: { $0.maxFrameRate >= kDesiredFrameRate }) {
+            let resolution = CMVideoFormatDescriptionGetDimensions(format.formatDescription)
+            if bestResolution ==  nil || isResolution(resolution, betterThan: bestResolution!) {
+               bestResolution = resolution
                bestFrameRateRange = range
+               bestFormat = format
             }
          }
+
       }
 
       if let bestFormat = bestFormat,
          let bestFrameRateRange = bestFrameRateRange {
          do {
             try device.lockForConfiguration()
-
-            // Set the device's active format.
             device.activeFormat = bestFormat
-            // Set the device's min/max frame duration.
             let duration = bestFrameRateRange.minFrameDuration
             device.activeVideoMinFrameDuration = duration
             device.activeVideoMaxFrameDuration = duration
             device.unlockForConfiguration()
+            print("Format applied successfully: \(bestFormat.description)")
          } catch {
-            // Handle error.
+            print("Unable to apply best format")
          }
       }
    }
