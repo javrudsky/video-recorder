@@ -29,8 +29,6 @@ class VideoCamera: NSObject {
    private var isSessionRunning = false
    private var connection: AVCaptureConnection?
 
-
-   // Communicate with the session and other session objects on this queue.
    private let sessionQueue = DispatchQueue(label: "javi.vc.sessionQueue")
    private let dataOutputQueue = DispatchQueue(label: "javi.vc.videoDataQueue",
                                                qos: .userInitiated,
@@ -47,11 +45,20 @@ class VideoCamera: NSObject {
       return fpsCalculator.fps
    }
 
-   override init() {
-
+   func start() {
+      askCameraPermissions()
+      if setupResult == .success {
+         sessionQueue.async {
+            self.configureSession()
+         }
+      }
    }
 
-   func askCameraPermissions() {
+   func stop() {
+      session.stopRunning()
+   }
+
+   private func askCameraPermissions() {
       switch AVCaptureDevice.authorizationStatus(for: .video) {
       case .authorized:
          break
@@ -67,10 +74,6 @@ class VideoCamera: NSObject {
 
       default:
          setupResult = .notAuthorized
-      }
-
-      sessionQueue.async {
-         self.configureSession()
       }
    }
 

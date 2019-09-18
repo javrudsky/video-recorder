@@ -53,7 +53,7 @@ class MainViewController: UIViewController {
 
       setupUI()
       camera.videoOutputHandler = handleVideoOutput
-      camera.askCameraPermissions()
+      camera.start()
       orientationDetector.orientationChangedHandler = { newOrientation in
          self.handle(orientation: newOrientation)
       }
