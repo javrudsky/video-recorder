@@ -16,11 +16,24 @@ class MainViewController: UIViewController {
    @IBOutlet var filterLabels: [UILabel]!
    @IBOutlet weak var metalView: MTKView!
 
-    @IBOutlet weak var orientationIcon: UIImageView!
-    @IBOutlet var icons: [UIImageView]!
-    @IBOutlet weak var fpsLabel: UILabel!
+   @IBOutlet weak var orientationIcon: UIImageView!
+   @IBOutlet var icons: [UIImageView]!
+   @IBOutlet weak var fpsLabel: UILabel!
 
-    struct FilterIndex {
+   @IBOutlet var buttons: [UIButton]!
+
+   @IBOutlet weak var playAndPauseButton: UIButton!
+   @IBOutlet weak var stopButton: UIButton!
+   @IBOutlet weak var showFiltersButton: UIButton!
+   @IBOutlet weak var resetFiltersButton: UIButton!
+
+    @IBOutlet weak var filtersMenuView: UIStackView!
+    var areFiltersVisible = false
+   @IBOutlet weak var filtersBotomConstraint: NSLayoutConstraint!
+   var initialFilterMenuBotom: CGFloat = 0.0
+   var filterMenuHeight: CGFloat = 0.0
+
+   struct FilterIndex {
       static let brightess = 0
       static let contrast = 1
       static let saturatin = 2
@@ -104,6 +117,9 @@ class MainViewController: UIViewController {
          setupFilterSlider(slider: filterSliders[index])
          setFilterLabelTitle(index: index, value: filterSliders[index].value)
       }
+      initialFilterMenuBotom = filtersBotomConstraint.constant
+      filterMenuHeight = filtersMenuView.frame.size.height
+      showAndHideFilters()
    }
 
    private func setupFilterSlider(slider: UISlider) {
@@ -131,7 +147,7 @@ class MainViewController: UIViewController {
    private func rotateImages(to angleInRadians: Float) {
       DispatchQueue.main.async {
          let transformation = CGAffineTransform(rotationAngle: CGFloat(angleInRadians))
-         UIView.animate(withDuration: 1.0, animations: {
+         UIView.animate(withDuration: 0.5, animations: {
 
             for icon in self.icons {
                icon.transform = transformation
@@ -140,12 +156,14 @@ class MainViewController: UIViewController {
                 label.transform = transformation
             }
 
+            for button in self.buttons {
+                button.transform = transformation
+            }
+
             self.fpsLabel.transform = transformation
          })
       }
    }
-
-   
 
    // MARK: VideoCamera
    private func handleVideoOutput(frame: CVPixelBuffer) {
@@ -168,4 +186,30 @@ class MainViewController: UIViewController {
       }
    }
 
+    @IBAction func playAndPauseTap(_ sender: UIButton) {
+    }
+
+    @IBAction func stopTap(_ sender: UIButton) {
+    }
+
+    @IBAction func showFiltersTap(_ sender: UIButton) {
+      showAndHideFiltersAnimated()
+    }
+
+   private func showAndHideFiltersAnimated() {
+      DispatchQueue.main.async {
+         UIView.animate(withDuration: 0.5, animations: {
+            self.showAndHideFilters()
+            self.view.layoutIfNeeded()
+         })
+      }
+   }
+   private func showAndHideFilters() {
+      areFiltersVisible = !areFiltersVisible
+      if areFiltersVisible {
+         filtersBotomConstraint.constant = initialFilterMenuBotom
+      } else {
+         filtersBotomConstraint.constant = -initialFilterMenuBotom - filterMenuHeight
+      }
+   }
 }

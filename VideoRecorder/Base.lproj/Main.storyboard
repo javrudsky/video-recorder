@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
-    <device id="retina6_1" orientation="portrait">
-        <adaptation id="fullscreen"/>
-    </device>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14868" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14824"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -37,12 +35,12 @@
                                     <constraint firstAttribute="height" constant="50" id="dZs-Kc-8ud"/>
                                 </constraints>
                             </imageView>
-                            <view alpha="0.29999999999999999" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="inv-Ec-Ajt" userLabel="controlsBg">
-                                <rect key="frame" x="0.0" y="672" width="414" height="190"/>
+                            <view alpha="0.29999999999999999" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="inv-Ec-Ajt" userLabel="filtersBg">
+                                <rect key="frame" x="0.0" y="652" width="414" height="150"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </view>
-                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="GiM-ad-tfT" userLabel="controls">
-                                <rect key="frame" x="10" y="672" width="394" height="190"/>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="GiM-ad-tfT" userLabel="filters">
+                                <rect key="frame" x="10" y="652" width="394" height="150"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" spacing="3" translatesAutoresizingMaskIntoConstraints="NO" id="Ksq-ES-ZLc" userLabel="brightnessView">
                                         <rect key="frame" x="0.0" y="0.0" width="394" height="50"/>
@@ -128,17 +126,75 @@
                                             </label>
                                         </subviews>
                                     </stackView>
-                                    <button opaque="NO" alpha="0.40000000000000002" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="C5T-3V-Uyf" userLabel="resetFilters">
-                                        <rect key="frame" x="0.0" y="150" width="394" height="40"/>
-                                        <color key="backgroundColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                </subviews>
+                            </stackView>
+                            <stackView opaque="NO" contentMode="scaleToFill" alignment="center" spacing="3" translatesAutoresizingMaskIntoConstraints="NO" id="hk8-pP-ntH" userLabel="options">
+                                <rect key="frame" x="10" y="802" width="394" height="60"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Hvd-WE-UTq" userLabel="space">
+                                        <rect key="frame" x="0.0" y="0.0" width="268" height="60"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="C5T-3V-Uyf" userLabel="resetFilters">
+                                        <rect key="frame" x="271" y="0.0" width="60" height="60"/>
                                         <constraints>
-                                            <constraint firstAttribute="height" constant="40" id="mVr-Bo-Wi4"/>
+                                            <constraint firstAttribute="width" constant="60" id="2mB-pL-hHn"/>
+                                            <constraint firstAttribute="height" constant="60" id="mVr-Bo-Wi4"/>
                                         </constraints>
-                                        <state key="normal" title="Reset Filters">
+                                        <state key="normal" image="icons8-reset">
                                             <color key="titleColor" cocoaTouchSystemColor="tableCellGroupedBackgroundColor"/>
                                         </state>
                                         <connections>
                                             <action selector="resetFiltersButtonTap:" destination="BYZ-38-t0r" eventType="touchUpInside" id="dIV-RF-wTY"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cUI-wB-imK" userLabel="showFilters">
+                                        <rect key="frame" x="334" y="0.0" width="60" height="60"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="60" id="9Ec-Gm-Ccv"/>
+                                            <constraint firstAttribute="width" constant="60" id="hiY-oT-JBv"/>
+                                        </constraints>
+                                        <state key="normal" image="icons8-filters">
+                                            <color key="titleColor" cocoaTouchSystemColor="tableCellGroupedBackgroundColor"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="showFiltersTap:" destination="BYZ-38-t0r" eventType="touchUpInside" id="eBG-Uf-6O9"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="60" id="upl-HI-wQR"/>
+                                </constraints>
+                            </stackView>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="3" translatesAutoresizingMaskIntoConstraints="NO" id="OWs-LB-d5i" userLabel="controls">
+                                <rect key="frame" x="10" y="391.5" width="60" height="123"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="P30-hk-oQr" userLabel="playAndPause">
+                                        <rect key="frame" x="0.0" y="0.0" width="60" height="60"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="60" id="LOU-9H-3Tc"/>
+                                            <constraint firstAttribute="width" constant="60" id="c9S-js-VAS"/>
+                                        </constraints>
+                                        <state key="normal" image="icons8-play">
+                                            <color key="titleColor" cocoaTouchSystemColor="tableCellGroupedBackgroundColor"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="playAndPauseTap:" destination="BYZ-38-t0r" eventType="touchUpInside" id="f8j-f2-f22"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="VcK-OZ-epX" userLabel="stop">
+                                        <rect key="frame" x="0.0" y="63" width="60" height="60"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="60" id="VZb-rf-Qhh"/>
+                                            <constraint firstAttribute="width" constant="60" id="dLs-Fb-QAb"/>
+                                        </constraints>
+                                        <state key="normal" image="icons8-stop">
+                                            <color key="titleColor" cocoaTouchSystemColor="tableCellGroupedBackgroundColor"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="stopTap:" destination="BYZ-38-t0r" eventType="touchUpInside" id="nuX-Eg-ecT"/>
                                         </connections>
                                     </button>
                                 </subviews>
@@ -147,17 +203,22 @@
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="uwB-Hs-kaV" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="5" id="02w-kr-VLQ"/>
+                            <constraint firstItem="OWs-LB-d5i" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="10" id="3VT-Rd-tK2"/>
                             <constraint firstItem="inv-Ec-Ajt" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="56Q-q3-f36"/>
                             <constraint firstItem="inv-Ec-Ajt" firstAttribute="width" secondItem="6Tk-OE-BBY" secondAttribute="width" id="7Wz-9O-mOE"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="6CT-5W-ylL" secondAttribute="trailing" id="8T7-s6-CZz"/>
                             <constraint firstItem="inv-Ec-Ajt" firstAttribute="top" secondItem="GiM-ad-tfT" secondAttribute="top" id="9JS-hX-8ND"/>
                             <constraint firstItem="uwB-Hs-kaV" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="5" id="9L8-sx-5rE"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="hk8-pP-ntH" secondAttribute="bottom" id="BUM-Cn-OrT"/>
                             <constraint firstItem="inv-Ec-Ajt" firstAttribute="height" secondItem="GiM-ad-tfT" secondAttribute="height" id="FzC-Rl-vqM"/>
                             <constraint firstItem="MwP-5L-7tO" firstAttribute="width" secondItem="6Tk-OE-BBY" secondAttribute="width" multiplier="0.25" id="JcS-dR-bFs"/>
+                            <constraint firstItem="OWs-LB-d5i" firstAttribute="centerY" secondItem="6Tk-OE-BBY" secondAttribute="centerY" id="Nfu-T3-0kp"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="GiM-ad-tfT" secondAttribute="trailing" constant="10" id="Njn-CT-lER"/>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="GiM-ad-tfT" secondAttribute="bottom" id="Rdr-6D-UbP"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="GiM-ad-tfT" secondAttribute="bottom" constant="60" id="Rdr-6D-UbP"/>
                             <constraint firstItem="6CT-5W-ylL" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="XPx-Zh-eg7"/>
+                            <constraint firstItem="hk8-pP-ntH" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="10" id="ZK6-br-Cea"/>
                             <constraint firstItem="MwP-5L-7tO" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="5" id="dev-hD-o91"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="hk8-pP-ntH" secondAttribute="trailing" constant="10" id="ggQ-M2-NJe"/>
                             <constraint firstItem="GiM-ad-tfT" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="10" id="jRD-pC-E1O"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="6CT-5W-ylL" secondAttribute="bottom" id="lPm-A5-GsG"/>
                             <constraint firstItem="6CT-5W-ylL" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="o4z-YG-9Vx"/>
@@ -167,9 +228,15 @@
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
                     <connections>
+                        <outlet property="filtersBotomConstraint" destination="Rdr-6D-UbP" id="09K-LR-CB4"/>
+                        <outlet property="filtersMenuView" destination="GiM-ad-tfT" id="MBd-7i-OLh"/>
                         <outlet property="fpsLabel" destination="MwP-5L-7tO" id="uqi-Nl-EMh"/>
                         <outlet property="metalView" destination="6CT-5W-ylL" id="CCR-h2-hyV"/>
                         <outlet property="orientationIcon" destination="uwB-Hs-kaV" id="Mcv-D4-7Wr"/>
+                        <outlet property="playAndPauseButton" destination="P30-hk-oQr" id="phB-30-oGc"/>
+                        <outlet property="resetFiltersButton" destination="C5T-3V-Uyf" id="sNJ-o0-6v9"/>
+                        <outlet property="showFiltersButton" destination="cUI-wB-imK" id="5Hv-WL-lRT"/>
+                        <outlet property="stopButton" destination="VcK-OZ-epX" id="vwO-ti-azd"/>
                         <outletCollection property="filterSliders" destination="sBf-Fx-g6n" collectionClass="NSMutableArray" id="Str-L8-mjc"/>
                         <outletCollection property="filterSliders" destination="1Qf-25-wew" collectionClass="NSMutableArray" id="XTu-OH-zz0"/>
                         <outletCollection property="filterSliders" destination="pYY-ca-gZL" collectionClass="NSMutableArray" id="d2S-t2-hBq"/>
@@ -180,16 +247,25 @@
                         <outletCollection property="filterLabels" destination="HGD-Je-7pv" collectionClass="NSMutableArray" id="sSu-KX-of7"/>
                         <outletCollection property="filterLabels" destination="yIr-8C-Wwd" collectionClass="NSMutableArray" id="FzJ-a1-Ilk"/>
                         <outletCollection property="filterLabels" destination="sZv-bT-Uag" collectionClass="NSMutableArray" id="SbM-2c-fIi"/>
+                        <outletCollection property="buttons" destination="P30-hk-oQr" collectionClass="NSMutableArray" id="wBA-m0-Zix"/>
+                        <outletCollection property="buttons" destination="VcK-OZ-epX" collectionClass="NSMutableArray" id="2fC-Ro-r6L"/>
+                        <outletCollection property="buttons" destination="cUI-wB-imK" collectionClass="NSMutableArray" id="Fgy-sz-Udj"/>
+                        <outletCollection property="buttons" destination="C5T-3V-Uyf" collectionClass="NSMutableArray" id="kqv-ek-JZ2"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
+            <point key="canvasLocation" x="139" y="106"/>
         </scene>
     </scenes>
     <resources>
         <image name="icons8-brightness" width="50" height="50"/>
         <image name="icons8-contrast" width="50" height="50"/>
+        <image name="icons8-filters" width="50" height="50"/>
+        <image name="icons8-play" width="32" height="32"/>
+        <image name="icons8-reset" width="45" height="45"/>
         <image name="icons8-rotate-camera" width="50" height="50"/>
         <image name="icons8-saturation" width="50" height="50"/>
+        <image name="icons8-stop" width="32" height="32"/>
     </resources>
 </document>
