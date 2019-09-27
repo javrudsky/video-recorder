@@ -28,7 +28,7 @@ class MainViewController: UIViewController {
    @IBOutlet weak var resetFiltersButton: UIButton!
 
     @IBOutlet weak var filtersMenuView: UIStackView!
-    var areFiltersVisible = false
+    var areFiltersVisible = true
    @IBOutlet weak var filtersBotomConstraint: NSLayoutConstraint!
    var initialFilterMenuBotom: CGFloat = 0.0
    var filterMenuHeight: CGFloat = 0.0
@@ -62,15 +62,17 @@ class MainViewController: UIViewController {
          metalView.device = device
          metalView.clearColor = Colors.yellow
          metalView.delegate = renderer
+
+         setupUI()
+         camera.videoOutputHandler = handleVideoOutput
+         camera.start()
+         orientationDetector.orientationChangedHandler = { newOrientation in
+            self.handle(orientation: newOrientation)
+         }
+         orientationDetector.start()
       }
 
-      setupUI()
-      camera.videoOutputHandler = handleVideoOutput
-      camera.start()
-      orientationDetector.orientationChangedHandler = { newOrientation in
-         self.handle(orientation: newOrientation)
-      }
-      orientationDetector.start()
+
    }
 
    @IBAction func filterValueChanged(_ sender: UISlider) {
