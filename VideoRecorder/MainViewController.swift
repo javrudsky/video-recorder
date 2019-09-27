@@ -202,6 +202,7 @@ class MainViewController: UIViewController {
             self.showAndHideFilters()
             self.view.layoutIfNeeded()
          })
+
       }
    }
    private func showAndHideFilters() {
