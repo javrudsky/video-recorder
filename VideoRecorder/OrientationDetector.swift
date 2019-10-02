@@ -41,7 +41,7 @@ class OrientationDetector {
          self.motion.deviceMotionUpdateInterval = kMotionUpdateInterval
          self.motion.showsDeviceMovementDisplay = true
          self.motion.startDeviceMotionUpdates(using: .xMagneticNorthZVertical,
-                                              to: self.motionQueue, withHandler: { (data, error) in
+                                              to: self.motionQueue, withHandler: { (data, _) in
                                                 if let data = data {
                                                    self.detectOrientation(pitch: data.attitude.pitch)
                                                 }
@@ -55,7 +55,7 @@ class OrientationDetector {
 
    private func detectOrientation(pitch: Double) {
       let newOrientation: BasicOrientation = (abs(pitch) > kOrientationLimit ? .portrait : .landscape)
-      if(newOrientation != currentOrientation) {
+      if newOrientation != currentOrientation {
          if let handler = orientationChangedHandler {
             handler(newOrientation)
          }

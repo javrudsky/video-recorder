@@ -9,8 +9,8 @@
 import simd
 
 struct Vertex {
-   var position: float3
-   var textureCoordinates: float2
+   var position: SIMD3<Float>
+   var textureCoordinates: SIMD2<Float>
 }
 
 struct Filters {

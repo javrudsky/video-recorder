@@ -22,10 +22,10 @@ class ViewRenderer: NSObject {
    private let kFragmentShaderFunction = "texture_shader"
 
    private let vertices: [Vertex] = [
-      Vertex(position: float3(-1.0, 1.0, 0.0), textureCoordinates: float2(0.0, 1.0)),
-      Vertex(position: float3(-1.0, -1.0, 0.0), textureCoordinates: float2(0.0, 0.0)),
-      Vertex(position: float3(1.0, -1.0, 0.0), textureCoordinates: float2(1.0, 0.0)),
-      Vertex(position: float3(1.0, 1.0, 0.0), textureCoordinates: float2(1.0, 1.0))
+      Vertex(position: SIMD3<Float>(-1.0, 1.0, 0.0), textureCoordinates: SIMD2<Float>(0.0, 1.0)),
+      Vertex(position: SIMD3<Float>(-1.0, -1.0, 0.0), textureCoordinates: SIMD2<Float>(0.0, 0.0)),
+      Vertex(position: SIMD3<Float>(1.0, -1.0, 0.0), textureCoordinates: SIMD2<Float>(1.0, 0.0)),
+      Vertex(position: SIMD3<Float>(1.0, 1.0, 0.0), textureCoordinates: SIMD2<Float>(1.0, 1.0))
    ]
 
    private let indexes: [UInt16] = [
@@ -70,7 +70,7 @@ class ViewRenderer: NSObject {
       vertexDescriptor.attributes[AttributeIndex.vertexPosition].bufferIndex = 0
 
       vertexDescriptor.attributes[AttributeIndex.textureCoordinates].format = .float2
-      vertexDescriptor.attributes[AttributeIndex.textureCoordinates].offset = MemoryLayout<float3>.stride
+      vertexDescriptor.attributes[AttributeIndex.textureCoordinates].offset = MemoryLayout<SIMD3<Float>>.stride
       vertexDescriptor.attributes[AttributeIndex.textureCoordinates].bufferIndex = 0
 
       vertexDescriptor.layouts[0].stride = MemoryLayout<Vertex>.stride
