@@ -172,17 +172,17 @@
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="OWs-LB-d5i" userLabel="controls">
                                 <rect key="frame" x="10" y="383" width="60" height="140"/>
                                 <subviews>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="P30-hk-oQr" userLabel="playAndPause">
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="P30-hk-oQr" userLabel="recordAndPause">
                                         <rect key="frame" x="0.0" y="0.0" width="60" height="60"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="60" id="LOU-9H-3Tc"/>
                                             <constraint firstAttribute="width" constant="60" id="c9S-js-VAS"/>
                                         </constraints>
-                                        <state key="normal" image="icons8-play">
+                                        <state key="normal" image="icons8-record">
                                             <color key="titleColor" cocoaTouchSystemColor="tableCellGroupedBackgroundColor"/>
                                         </state>
                                         <connections>
-                                            <action selector="playAndPauseTap:" destination="BYZ-38-t0r" eventType="touchUpInside" id="f8j-f2-f22"/>
+                                            <action selector="recordAndPauseTap:" destination="BYZ-38-t0r" eventType="touchUpInside" id="zyX-bi-TTF"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="VcK-OZ-epX" userLabel="stop">
@@ -241,7 +241,7 @@
                         <outlet property="fpsLabel" destination="MwP-5L-7tO" id="uqi-Nl-EMh"/>
                         <outlet property="metalView" destination="6CT-5W-ylL" id="CCR-h2-hyV"/>
                         <outlet property="orientationIcon" destination="uwB-Hs-kaV" id="Mcv-D4-7Wr"/>
-                        <outlet property="playAndPauseButton" destination="P30-hk-oQr" id="phB-30-oGc"/>
+                        <outlet property="recordAndPauseButton" destination="P30-hk-oQr" id="JiC-e8-2FB"/>
                         <outlet property="resetFiltersButton" destination="C5T-3V-Uyf" id="sNJ-o0-6v9"/>
                         <outlet property="showFiltersButton" destination="cUI-wB-imK" id="5Hv-WL-lRT"/>
                         <outlet property="stopButton" destination="VcK-OZ-epX" id="vwO-ti-azd"/>
@@ -270,7 +270,7 @@
         <image name="icons8-brightness" width="50" height="50"/>
         <image name="icons8-contrast" width="50" height="50"/>
         <image name="icons8-filters" width="50" height="50"/>
-        <image name="icons8-play" width="64" height="64"/>
+        <image name="icons8-record" width="64" height="64"/>
         <image name="icons8-reset" width="45" height="45"/>
         <image name="icons8-rotate-camera" width="50" height="50"/>
         <image name="icons8-saturation" width="50" height="50"/>

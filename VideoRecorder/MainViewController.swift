@@ -22,7 +22,7 @@ class MainViewController: UIViewController {
 
    @IBOutlet var buttons: [UIButton]!
 
-   @IBOutlet weak var playAndPauseButton: UIButton!
+   @IBOutlet weak var recordAndPauseButton: UIButton!
    @IBOutlet weak var stopButton: UIButton!
    @IBOutlet weak var showFiltersButton: UIButton!
    @IBOutlet weak var resetFiltersButton: UIButton!
@@ -32,6 +32,10 @@ class MainViewController: UIViewController {
    @IBOutlet weak var filtersBotomConstraint: NSLayoutConstraint!
    var initialFilterMenuBotom: CGFloat = 0.0
    var filterMenuHeight: CGFloat = 0.0
+
+   let recordImage: UIImage = UIImage(named: Icons.record)!
+   let pauseImage: UIImage = UIImage(named: Icons.pause)!
+   let resumeRecordImage: UIImage = UIImage(named: Icons.resumeRecord)!
 
    struct FilterIndex {
       static let brightess = 0
@@ -51,6 +55,11 @@ class MainViewController: UIViewController {
 
    let camera = VideoCamera()
    let orientationDetector = OrientationDetector()
+   let recorder = VideoRecorder()
+
+   var orientationIsLocked: Bool {
+      return recorder.status != .stopped
+   }
 
    override func viewDidLoad() {
       super.viewDidLoad()
@@ -71,8 +80,6 @@ class MainViewController: UIViewController {
          }
          orientationDetector.start()
       }
-
-
    }
 
    @IBAction func filterValueChanged(_ sender: UISlider) {
@@ -147,6 +154,11 @@ class MainViewController: UIViewController {
     }
 
    private func rotateImages(to angleInRadians: Float) {
+
+      if orientationIsLocked {
+         return
+      }
+
       DispatchQueue.main.async {
          let transformation = CGAffineTransform(rotationAngle: CGFloat(angleInRadians))
          UIView.animate(withDuration: 0.5, animations: {
@@ -167,7 +179,7 @@ class MainViewController: UIViewController {
       }
    }
 
-   // MARK: VideoCamera
+   // MARK: Video Camera
    private func handleVideoOutput(frame: CVPixelBuffer) {
       guard let device = self.device else {
          return
@@ -187,12 +199,6 @@ class MainViewController: UIViewController {
          self.fpsLabel.text = "\(self.camera.currentFps)"
       }
    }
-
-    @IBAction func playAndPauseTap(_ sender: UIButton) {
-    }
-
-    @IBAction func stopTap(_ sender: UIButton) {
-    }
 
     @IBAction func showFiltersTap(_ sender: UIButton) {
       showAndHideFiltersAnimated()
@@ -214,5 +220,35 @@ class MainViewController: UIViewController {
       } else {
          filtersBotomConstraint.constant = -initialFilterMenuBotom - filterMenuHeight
       }
+   }
+
+   // MARK: Video Recorder
+    @IBAction func recordAndPauseTap(_ sender: UIButton) {
+      recordOrPauseRecording()
+    }
+
+    @IBAction func stopTap(_ sender: UIButton) {
+      stopRecording()
+    }
+
+   private func recordOrPauseRecording() {
+      switch recorder.status {
+      case .stopped:
+         recorder.record()
+         recordAndPauseButton.setImage(pauseImage, for: .normal)
+         stopButton.isEnabled = true
+      case .paused:
+         recorder.resume()
+         recordAndPauseButton.setImage(pauseImage, for: .normal)
+      case .recording:
+         recorder.pause()
+         recordAndPauseButton.setImage(resumeRecordImage, for: .normal)
+      }
+   }
+
+   private func stopRecording() {
+      recorder.stop()
+      stopButton.isEnabled = false
+      recordAndPauseButton.setImage(recordImage, for: .normal)
    }
 }

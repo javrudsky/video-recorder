@@ -14,4 +14,6 @@ struct Icons {
    static let close = "icons8-close"
    static let start = "icons8-start"
    static let pause = "icons8-pause"
+   static let resumeRecord = "icons8-resume-record"
+   static let record = "icons8-record"
 }
