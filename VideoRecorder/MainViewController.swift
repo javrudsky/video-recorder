@@ -53,12 +53,12 @@ class MainViewController: UIViewController {
    var renderer: ViewRenderer?
    var device: MTLDevice?
 
-   let camera = VideoCamera()
+   let camera = VideoCamera(fpsCalculator: FpsCalculator())
    let orientationDetector = OrientationDetector()
-   let recorder = VideoRecorder()
+   var recorder: VideoRecorder?
 
    var orientationIsLocked: Bool {
-      return recorder.status != .stopped
+      return recorder?.status != .idle
    }
 
    override func viewDidLoad() {
@@ -224,6 +224,7 @@ class MainViewController: UIViewController {
 
    // MARK: Video Recorder
     @IBAction func recordAndPauseTap(_ sender: UIButton) {
+      initRecorderIfNeeded()
       recordOrPauseRecording()
     }
 
@@ -231,9 +232,24 @@ class MainViewController: UIViewController {
       stopRecording()
     }
 
+   private func initRecorderIfNeeded() {
+      if recorder == nil, let videoFormat = camera.videoCaptureDevice?.activeFormat {
+         recorder = VideoRecorder(videoFormatDescription: videoFormat.formatDescription)
+      }
+   }
+
    private func recordOrPauseRecording() {
+      guard let recorder = self.recorder else {
+         // TODO: Display error on UI
+         Log.e("Video recorder is not available", self)
+         return
+      }
+
       switch recorder.status {
-      case .stopped:
+      case .initialized:
+         // TODO
+         print("something here")
+      case .idle:
          recorder.record()
          recordAndPauseButton.setImage(pauseImage, for: .normal)
          stopButton.isEnabled = true
@@ -243,11 +259,16 @@ class MainViewController: UIViewController {
       case .recording:
          recorder.pause()
          recordAndPauseButton.setImage(resumeRecordImage, for: .normal)
+      case .failed:
+         // TODO: Display error on UI
+         Log.e("Wrong recorder status", self)
+      default:
+         Log.d("No action for this status")
       }
    }
 
    private func stopRecording() {
-      recorder.stop()
+      recorder?.stop()
       stopButton.isEnabled = false
       recordAndPauseButton.setImage(recordImage, for: .normal)
    }

@@ -1,6 +1,6 @@
 //
 //  Colors.swift
-//  polar video rec
+//  VideoRecorder
 //
 //  Created by Javier L. Avrudsky on 16/07/2019.
 //  Copyright © 2019 Javi. All rights reserved.

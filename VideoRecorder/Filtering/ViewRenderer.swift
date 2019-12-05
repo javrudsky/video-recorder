@@ -84,7 +84,7 @@ class ViewRenderer: NSObject {
       do {
          pipelineState = try device.makeRenderPipelineState(descriptor: pipelineDescriptor)
       } catch {
-         print("error: \(error.localizedDescription)")
+         Log.e("Could not create pipeline state: \(error.localizedDescription)", self)
       }
    }
 

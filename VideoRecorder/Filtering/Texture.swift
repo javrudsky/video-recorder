@@ -61,7 +61,7 @@ extension Texture {
          do {
             texture = try textureLoader.newTexture(URL: textureUrl, options: textureLoaderOptions)
          } catch {
-            print("error: Texture loaded \(error.localizedDescription)")
+            Log.e("Could not load texture: \(error.localizedDescription)", self)
          }
       }
       return texture

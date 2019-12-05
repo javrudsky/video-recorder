@@ -37,9 +37,16 @@ class VideoCamera: NSObject {
    private let videoDataOutput = AVCaptureVideoDataOutput()
    private var setupResult: SessionSetupResult = .success
 
-   @objc dynamic var videoDeviceInput: AVCaptureDeviceInput!
+   private var videoDeviceInput: AVCaptureDeviceInput?
 
-   private let fpsCalculator = FpsCalculator()
+
+   private let fpsCalculator: FpsCalculator
+
+   var videoCaptureDevice: AVCaptureDevice?
+
+   init(fpsCalculator: FpsCalculator) {
+      self.fpsCalculator = fpsCalculator
+   }
 
    var currentFps: Int {
       return fpsCalculator.fps
@@ -84,11 +91,11 @@ class VideoCamera: NSObject {
 
       session.beginConfiguration()
 
-      guard let videoDevice = chooseVideoDevice() else {
+      guard let videoDevice = chooseVideoCaptureDevice() else {
          sessionSetupFail(reason: "Default video device is unavailable.")
          return
       }
-
+      videoCaptureDevice = videoDevice
       let captureDeviceInputResult = captureDevice(captureDevice: videoDevice)
       guard let videoDeviceInput = captureDeviceInputResult.captureDeviceInput else {
          sessionSetupFail(reason: "Couldn't create video device input: " +
@@ -152,9 +159,9 @@ class VideoCamera: NSObject {
             device.activeVideoMinFrameDuration = duration
             device.activeVideoMaxFrameDuration = duration
             device.unlockForConfiguration()
-            print("Format applied successfully: \(bestFormat.description)")
+            Log.d("Format applied successfully: \(bestFormat.description)", self)
          } catch {
-            print("Unable to apply best format")
+            Log.e("Unable to apply best format: \(error.localizedDescription)", self)
          }
       }
    }
@@ -190,13 +197,13 @@ extension VideoCamera: AVCaptureVideoDataOutputSampleBufferDelegate {
    func captureOutput(_ output: AVCaptureOutput,
                       didDrop sampleBuffer: CMSampleBuffer,
                       from connection: AVCaptureConnection) {
-      print("dropped frame!!!")
+      Log.w("dropped frame!!!", self)
    }
 }
 
 // MARK: Choosing Video Camera
 extension VideoCamera {
-   private func chooseVideoDevice() -> AVCaptureDevice? {
+   private func chooseVideoCaptureDevice() -> AVCaptureDevice? {
       var videoDevice: AVCaptureDevice?
       if let dualCameraDevice = dualCamera() {
          videoDevice = dualCameraDevice
@@ -266,7 +273,7 @@ extension VideoCamera {
 
    private func sessionSetupFail(reason: String? = nil) {
       if let message = reason {
-         print(message)
+         Log.e(message, self)
       }
       setupResult = .configurationFailed
       session.commitConfiguration()
