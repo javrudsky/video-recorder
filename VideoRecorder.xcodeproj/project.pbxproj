@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		593D672F23606E9A004C3675 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 593D672E23606E9A004C3675 /* Logger.swift */; };
 		594677F822D80A6400F94E58 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 594677F722D80A6400F94E58 /* AppDelegate.swift */; };
 		594677FD22D80A6400F94E58 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 594677FB22D80A6400F94E58 /* Main.storyboard */; };
 		594677FF22D80A6700F94E58 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 594677FE22D80A6700F94E58 /* Assets.xcassets */; };
@@ -38,6 +39,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		593D672E23606E9A004C3675 /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
 		594677F422D80A6400F94E58 /* VideoRecorder.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VideoRecorder.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		594677F722D80A6400F94E58 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		594677FC22D80A6400F94E58 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -58,7 +60,7 @@
 		5946784A22ECCD7200F94E58 /* TextureFilteringPipeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextureFilteringPipeline.swift; sourceTree = "<group>"; };
 		5946785122F1914A00F94E58 /* Texture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Texture.swift; sourceTree = "<group>"; };
 		596A7B54233B79F0004F6139 /* Icons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Icons.swift; sourceTree = "<group>"; };
-		596A7B57233E1D6B004F6139 /* VideoRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoRecorder.swift; sourceTree = "<group>"; };
+		596A7B57233E1D6B004F6139 /* VideoRecorder.swift */ = {isa = PBXFileReference; indentWidth = 3; lastKnownFileType = sourcecode.swift; path = VideoRecorder.swift; sourceTree = "<group>"; tabWidth = 3; };
 		598F9BD923055B1100F0E4C0 /* VideoCamera.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoCamera.swift; sourceTree = "<group>"; };
 		598F9BDE230C063F00F0E4C0 /* OrientationDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrientationDetector.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -81,6 +83,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		593D672D23606E88004C3675 /* Util */ = {
+			isa = PBXGroup;
+			children = (
+				593D672E23606E9A004C3675 /* Logger.swift */,
+			);
+			path = Util;
+			sourceTree = "<group>";
+		};
 		594677EB22D80A6400F94E58 = {
 			isa = PBXGroup;
 			children = (
@@ -104,6 +114,7 @@
 		594677F622D80A6400F94E58 /* VideoRecorder */ = {
 			isa = PBXGroup;
 			children = (
+				593D672D23606E88004C3675 /* Util */,
 				5946784522E33D6D00F94E58 /* Metal */,
 				598F9BD723055AAD00F0E4C0 /* Filtering */,
 				598F9BD823055AE200F0E4C0 /* Video */,
@@ -294,6 +305,7 @@
 				5946782122DDD0A500F94E58 /* Colors.swift in Sources */,
 				5946782322DDD18C00F94E58 /* MainViewController.swift in Sources */,
 				5946783C22E1C93900F94E58 /* Types.swift in Sources */,
+				593D672F23606E9A004C3675 /* Logger.swift in Sources */,
 				5946784922ECCC9900F94E58 /* TextureFilter.swift in Sources */,
 				5946781E22DDCF4000F94E58 /* ViewRenderer.swift in Sources */,
 				598F9BDF230C063F00F0E4C0 /* OrientationDetector.swift in Sources */,
