@@ -61,8 +61,20 @@ class MainViewController: UIViewController {
       return recorder?.status != .idle
    }
 
+   let imageUtils = ImageUtils()
+
    override func viewDidLoad() {
       super.viewDidLoad()
+
+      let permissionsManager = PermissionsManager()
+
+      if !permissionsManager.checkAndAskCameraPermissions() {
+         return
+      }
+
+      if !permissionsManager.checkAndAskPhotoLibraryAccess() {
+         return
+      }
 
       if let device = MTLCreateSystemDefaultDevice() {
          self.device = device
@@ -180,14 +192,36 @@ class MainViewController: UIViewController {
    }
 
    // MARK: Video Camera
-   private func handleVideoOutput(frame: CVPixelBuffer) {
+   private func handleVideoOutput(frame: CMSampleBuffer) {
       guard let device = self.device else {
          return
       }
 
       let texture = Texture(from: frame, on: device)
-      if texture.texture != nil {
-         applyFilters(to: texture)
+      applyFilters(to: texture)
+      if let metalTexture = renderer?.texture?.texture {
+         //imageUtils.updateSample(sampleBuffer: frame, texture: metalTexture)
+       //  if recorder?.status == .recording {
+         //let  pixelBuffer = CMSampleBufferGetImageBuffer(frame)
+         var pixelBuffer: CVPixelBuffer? = nil
+         let res = CVPixelBufferCreate(nil, metalTexture.width, metalTexture.height, kCVPixelFormatType_32BGRA, nil, &pixelBuffer)
+         if let pixelBuffer = pixelBuffer {
+            CVPixelBufferLockBaseAddress(pixelBuffer, .init(rawValue: 0))
+            let bytesPerRow = CVPixelBufferGetBytesPerRow(pixelBuffer)
+            let width = CVPixelBufferGetWidth(pixelBuffer)
+            let height = CVPixelBufferGetHeight(pixelBuffer)
+            let region = MTLRegionMake2D(0, 0, Int(width), height)
+
+            guard let tempBuffer = CVPixelBufferGetBaseAddress(pixelBuffer) else {
+               Log.e("Return from tmpbuffer", self)
+               return
+            }
+            metalTexture.getBytes(tempBuffer, bytesPerRow: Int(bytesPerRow), from: region, mipmapLevel: 0)
+            CVPixelBufferUnlockBaseAddress(pixelBuffer, .init(rawValue: 0))
+
+        // }
+         recorder?.appendFrame(sample: frame, sample1: pixelBuffer)
+         }
       }
 
       self.displayFps()

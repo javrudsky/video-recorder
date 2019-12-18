@@ -7,6 +7,7 @@
 //
 
 import MetalKit
+import CoreMedia
 
 enum TextureAccess {
    case readOnly
@@ -37,9 +38,9 @@ struct Texture {
       self.texture = textureFrom(descriptor: descriptor)
    }
 
-   init(from pixelBuffer: CVPixelBuffer, on device: MTLDevice) {
+   init(from sampleBuffer: CMSampleBuffer, on device: MTLDevice) {
       self.device = device
-      self.texture = textureFrom(pixelBuffer: pixelBuffer)
+      self.texture = textureFrom(sampleBuffer: sampleBuffer)
    }
 }
 
@@ -79,7 +80,10 @@ extension Texture {
       return device.makeTexture(descriptor: mtlDescriptor)
    }
 
-   private func textureFrom(pixelBuffer: CVPixelBuffer) -> MTLTexture? {
+   private func textureFrom(sampleBuffer: CMSampleBuffer) -> MTLTexture? {
+      guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else {
+         return nil
+      }
 
       let width = CVPixelBufferGetWidth(pixelBuffer)
       let height = CVPixelBufferGetHeight(pixelBuffer)

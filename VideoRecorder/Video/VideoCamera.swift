@@ -10,7 +10,7 @@ import Foundation
 import AVFoundation
 import UIKit
 
-typealias VideoOutputHandler = (CVPixelBuffer) -> Void
+typealias VideoOutputHandler = (CMSampleBuffer) -> Void
 
 class VideoCamera: NSObject {
 
@@ -21,7 +21,6 @@ class VideoCamera: NSObject {
 
    private enum SessionSetupResult {
       case success
-      case notAuthorized
       case configurationFailed
    }
 
@@ -53,8 +52,7 @@ class VideoCamera: NSObject {
    }
 
    func start() {
-      askCameraPermissions()
-      if setupResult == .success {
+      if isCameraAccesGranted() {
          sessionQueue.async {
             self.configureSession()
          }
@@ -65,23 +63,8 @@ class VideoCamera: NSObject {
       session.stopRunning()
    }
 
-   private func askCameraPermissions() {
-      switch AVCaptureDevice.authorizationStatus(for: .video) {
-      case .authorized:
-         break
-
-      case .notDetermined:
-         sessionQueue.suspend()
-         AVCaptureDevice.requestAccess(for: .video, completionHandler: { granted in
-            if !granted {
-               self.setupResult = .notAuthorized
-            }
-            self.sessionQueue.resume()
-         })
-
-      default:
-         setupResult = .notAuthorized
-      }
+   private func isCameraAccesGranted() -> Bool {
+      return AVCaptureDevice.authorizationStatus(for: .video) == .authorized
    }
 
    private func configureSession() {
@@ -187,9 +170,8 @@ extension VideoCamera: AVCaptureVideoDataOutputSampleBufferDelegate {
                       didOutput sampleBuffer: CMSampleBuffer,
                       from connection: AVCaptureConnection) {
 
-      if let videoOutputHandler = self.videoOutputHandler,
-         let pixelBuffer: CVPixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) {
-         videoOutputHandler(pixelBuffer)
+      if let videoOutputHandler = self.videoOutputHandler {
+         videoOutputHandler(sampleBuffer)
       }
       fpsCalculator.updateFrameTime()
    }

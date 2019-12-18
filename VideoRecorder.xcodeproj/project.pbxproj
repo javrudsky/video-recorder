@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5907DD00239F94B60031ABBD /* ImageUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5907DCFF239F94B60031ABBD /* ImageUtils.swift */; };
+		5907DD0623A0F1BE0031ABBD /* PermissionsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5907DD0523A0F1BE0031ABBD /* PermissionsManager.swift */; };
 		593D672F23606E9A004C3675 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 593D672E23606E9A004C3675 /* Logger.swift */; };
 		594677F822D80A6400F94E58 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 594677F722D80A6400F94E58 /* AppDelegate.swift */; };
 		594677FD22D80A6400F94E58 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 594677FB22D80A6400F94E58 /* Main.storyboard */; };
@@ -39,6 +41,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		5907DCFF239F94B60031ABBD /* ImageUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageUtils.swift; sourceTree = "<group>"; };
+		5907DD0523A0F1BE0031ABBD /* PermissionsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionsManager.swift; sourceTree = "<group>"; };
 		593D672E23606E9A004C3675 /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
 		594677F422D80A6400F94E58 /* VideoRecorder.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VideoRecorder.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		594677F722D80A6400F94E58 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -127,6 +131,7 @@
 				594677FE22D80A6700F94E58 /* Assets.xcassets */,
 				5946780022D80A6700F94E58 /* LaunchScreen.storyboard */,
 				5946780322D80A6700F94E58 /* Info.plist */,
+				5907DD0523A0F1BE0031ABBD /* PermissionsManager.swift */,
 			);
 			indentWidth = 3;
 			path = VideoRecorder;
@@ -169,6 +174,7 @@
 			children = (
 				598F9BD923055B1100F0E4C0 /* VideoCamera.swift */,
 				596A7B57233E1D6B004F6139 /* VideoRecorder.swift */,
+				5907DCFF239F94B60031ABBD /* ImageUtils.swift */,
 			);
 			path = Video;
 			sourceTree = "<group>";
@@ -310,6 +316,8 @@
 				5946781E22DDCF4000F94E58 /* ViewRenderer.swift in Sources */,
 				598F9BDF230C063F00F0E4C0 /* OrientationDetector.swift in Sources */,
 				594677F822D80A6400F94E58 /* AppDelegate.swift in Sources */,
+				5907DD0623A0F1BE0031ABBD /* PermissionsManager.swift in Sources */,
+				5907DD00239F94B60031ABBD /* ImageUtils.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
