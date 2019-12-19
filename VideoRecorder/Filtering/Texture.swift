@@ -23,6 +23,9 @@ struct TextureDescriptor {
 struct Texture {
    private var device: MTLDevice
    var texture: MTLTexture?
+   var pixelBuffer: CVPixelBuffer? {
+      return pixelBufferFromTexture()
+   }
 
    init(fromResource fileName: String, withExtension fileType: String, on device: MTLDevice) {
       self.device = device
@@ -107,6 +110,36 @@ extension Texture {
       }
       CVMetalTextureCacheFlush(textureCache!, 0)
       return texture
+   }
+
+   private func pixelBufferFromTexture() -> CVPixelBuffer? {
+      if let metalTexture = self.texture {
+         var pixelBuffer: CVPixelBuffer? = nil
+         let bufferCreationResult = CVPixelBufferCreate(nil, metalTexture.width,
+                                                        metalTexture.height,
+                                                        kCVPixelFormatType_32BGRA, nil,
+                                                        &pixelBuffer)
+
+         if  bufferCreationResult == kCVReturnSuccess,
+            let pixelBuffer = pixelBuffer {
+            CVPixelBufferLockBaseAddress(pixelBuffer, .init(rawValue: 0))
+            let bytesPerRow = CVPixelBufferGetBytesPerRow(pixelBuffer)
+            let width = CVPixelBufferGetWidth(pixelBuffer)
+            let height = CVPixelBufferGetHeight(pixelBuffer)
+            let region = MTLRegionMake2D(0, 0, Int(width), height)
+
+            guard let bufferAddress = CVPixelBufferGetBaseAddress(pixelBuffer) else {
+               Log.e("Couldn't get pixel buffer address", self)
+               return nil
+            }
+            metalTexture.getBytes(bufferAddress, bytesPerRow: Int(bytesPerRow), from: region, mipmapLevel: 0)
+            CVPixelBufferUnlockBaseAddress(pixelBuffer, .init(rawValue: 0))
+            return pixelBuffer
+         } else {
+            Log.e("Couldn't create pixel buffer from texture. Result code: \(bufferCreationResult)")
+         }
+      }
+      return nil
    }
 
 }

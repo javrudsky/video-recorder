@@ -19,7 +19,7 @@ enum OperationResult {
 }
 
 enum RecorderStatus {
-   case initialized
+   case prepared
    case recording
    case resuming
    case idle
@@ -27,6 +27,7 @@ enum RecorderStatus {
    case paused
    case failed
    case stoping
+   case stopped
 }
 
 struct RecorderInfo {
@@ -78,9 +79,9 @@ class VideoRecorder {
             Log.e("Could not start writing session, invalid status", self)
             self.transitionToStatus(.idle)
          } else {
-            self.transitionToStatus(.initialized)
+            self.transitionToStatus(.prepared)
          }
-         let operationResult: OperationResult = (self.status == .initialized ? .initializeSuccess : .initializeFail)
+         let operationResult: OperationResult = (self.status == .prepared ? .initializeSuccess : .initializeFail)
          self.statusHandler?(RecorderInfo(operationResult: operationResult, recorderStatus: self.status))
       }
    }
@@ -94,7 +95,7 @@ class VideoRecorder {
    }
 
    func stop() {
-      stopRecording()
+      transitionToStatus(.stoping)
    }
 
    // MARK: - Writing -
@@ -117,7 +118,7 @@ class VideoRecorder {
 
    func startWriting() {
       if !canStartRecording() {
-         transitionToStatus(.initialized, errorMessage: "Could not start writing, invalid status: \(self.status)")
+         transitionToStatus(.idle, errorMessage: "Could not start writing, invalid status: \(self.status)")
          return
       }
 
@@ -132,7 +133,7 @@ class VideoRecorder {
 
             if let writer = assetWriter {
                if writer.startWriting() {
-                  transitionToStatus(.initialized)
+                  transitionToStatus(.prepared)
                } else {
                   transitionToStatus(.failed,
                                      errorMessage:
@@ -192,7 +193,9 @@ class VideoRecorder {
          let assetWriter = assetWriter,
          assetWriter.canAdd(videoSourceWriterInput) {
 
-         assetWriterInputPixelBufferAdaptor = AVAssetWriterInputPixelBufferAdaptor(assetWriterInput: videoSourceWriterInput, sourcePixelBufferAttributes: nil)
+         assetWriterInputPixelBufferAdaptor = AVAssetWriterInputPixelBufferAdaptor(
+            assetWriterInput: videoSourceWriterInput,
+            sourcePixelBufferAttributes: nil)
          videoSourceWriterInput.expectsMediaDataInRealTime = true
          assetWriter.add(videoSourceWriterInput)
          return true
@@ -200,42 +203,46 @@ class VideoRecorder {
       return false
    }
 
-   func appendFrame(sample: CMSampleBuffer, sample1: CVPixelBuffer) {
-      guard let assetWriter = self.assetWriter, canAppendFrames() else {
+   func appendFrame(sample: CVPixelBuffer,at sourceTime: CMTime) {
+      guard let assetWriter = self.assetWriter else {
          return
       }
+
       writingQueue.async {
 
-         if self.status == .initialized || self.status == .resuming {
-            if #available(iOS 13.0, *) {
-               //assetWriter.startSession(atSourceTime: sample.decodeTimeStamp)
-               assetWriter.startSession(atSourceTime: CMSampleBufferGetPresentationTimeStamp(sample))
-            } else {
-               assetWriter.startSession(atSourceTime: CMSampleBufferGetPresentationTimeStamp(sample))
-            }
+         if self.status == .prepared || self.status == .resuming {
+            assetWriter.startSession(atSourceTime: sourceTime)
+            Log.d("Recording session started: \(assetWriter.status)", self)
             self.transitionToStatus(.recording)
+         }
+
+         if self.status == .pausing {
+            self.transitionToStatus(.paused)
+            assetWriter.endSession (atSourceTime: sourceTime)
+            Log.d("Recording session paused: \(assetWriter.status)", self)
+            return
+         }
+
+         if self.status == .stoping {
+            self.transitionToStatus(.stopped)
+            assetWriter.endSession (atSourceTime: sourceTime)
+            self.stopRecording()
+            Log.d("Recording session stopped: \(assetWriter.status)", self)
+            return
          }
 
          if let videoSourceWriterInput = self.videoSourceWriterInput,
             let assetWriterInputPixelBufferAdaptor = self.assetWriterInputPixelBufferAdaptor,
-            videoSourceWriterInput.isReadyForMoreMediaData {
-            assetWriterInputPixelBufferAdaptor.append(sample1, withPresentationTime: CMSampleBufferGetPresentationTimeStamp(sample))
-         }
-
-         if self.status == .pausing {
-            if #available(iOS 13.0, *) {
-               assetWriter.endSession (atSourceTime: sample.decodeTimeStamp)
-            } else {
-               assetWriter.endSession(atSourceTime: CMSampleBufferGetPresentationTimeStamp(sample))
-            }
-            self.transitionToStatus(.paused)
-            return
+            videoSourceWriterInput.isReadyForMoreMediaData,
+            self.canAppendFrames() {
+            Log.d("Adding samples: \(assetWriter.status)", self)
+            assetWriterInputPixelBufferAdaptor.append(sample,
+                                                      withPresentationTime: sourceTime)
          }
       }
    }
 
    func stopRecording() {
-      transitionToStatus(.stoping)
       assetWriter?.finishWriting { [weak self] in
          if let self = self {
             if self.assetWriter?.status == .failed {
@@ -251,10 +258,10 @@ class VideoRecorder {
                Log.d("Finished writting file: \(self.currentFileUrl?.path ?? "Unknown")", self)
             }
 
-            if let url = self.currentFileUrl {
+            if let url = self.currentFileUrl, self.status != .failed {
                PHPhotoLibrary.shared().performChanges({
                   PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: url)
-               }) { saved, error in
+               }, completionHandler: { saved, error in
                    if saved {
                      self.statusHandler?(RecorderInfo(operationResult: .writeFileSuccess, recorderStatus: .idle))
                    } else {
@@ -263,7 +270,7 @@ class VideoRecorder {
                                                       message: "Error saving to photo library"))
                      Log.e("Error saving to library \(error.debugDescription)", self)
                   }
-               }
+               })
 
             }
             self.transitionToStatus(.idle)
@@ -277,11 +284,11 @@ class VideoRecorder {
    }
 
    private func canAppendFrames() -> Bool {
-      return [.initialized, .recording, .pausing].contains(status)
+      return status == .recording
    }
 
    private func canStartWritingSession() -> Bool {
-      return status == .initialized
+      return status == .prepared
    }
 
    private func transitionToStatus(_ status: RecorderStatus, errorMessage: String? = nil) {

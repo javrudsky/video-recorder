@@ -28,6 +28,7 @@
 		596A7B58233E1D6B004F6139 /* VideoRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 596A7B57233E1D6B004F6139 /* VideoRecorder.swift */; };
 		598F9BDA23055B1100F0E4C0 /* VideoCamera.swift in Sources */ = {isa = PBXBuildFile; fileRef = 598F9BD923055B1100F0E4C0 /* VideoCamera.swift */; };
 		598F9BDF230C063F00F0E4C0 /* OrientationDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 598F9BDE230C063F00F0E4C0 /* OrientationDetector.swift */; };
+		59A3992723AB826B00CA74E8 /* CMSampleBuffer+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59A3992623AB826B00CA74E8 /* CMSampleBuffer+Extension.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -67,6 +68,7 @@
 		596A7B57233E1D6B004F6139 /* VideoRecorder.swift */ = {isa = PBXFileReference; indentWidth = 3; lastKnownFileType = sourcecode.swift; path = VideoRecorder.swift; sourceTree = "<group>"; tabWidth = 3; };
 		598F9BD923055B1100F0E4C0 /* VideoCamera.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoCamera.swift; sourceTree = "<group>"; };
 		598F9BDE230C063F00F0E4C0 /* OrientationDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrientationDetector.swift; sourceTree = "<group>"; };
+		59A3992623AB826B00CA74E8 /* CMSampleBuffer+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CMSampleBuffer+Extension.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -91,6 +93,7 @@
 			isa = PBXGroup;
 			children = (
 				593D672E23606E9A004C3675 /* Logger.swift */,
+				59A3992623AB826B00CA74E8 /* CMSampleBuffer+Extension.swift */,
 			);
 			path = Util;
 			sourceTree = "<group>";
@@ -318,6 +321,7 @@
 				594677F822D80A6400F94E58 /* AppDelegate.swift in Sources */,
 				5907DD0623A0F1BE0031ABBD /* PermissionsManager.swift in Sources */,
 				5907DD00239F94B60031ABBD /* ImageUtils.swift in Sources */,
+				59A3992723AB826B00CA74E8 /* CMSampleBuffer+Extension.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

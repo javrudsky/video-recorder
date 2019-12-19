@@ -118,7 +118,7 @@ class MainViewController: UIViewController {
       setFilterLabelTitle(index: index, value: value)
    }
 
-   private func applyFilters(to texture: Texture) {
+   private func applyFilters(to texture: Texture, completion: @escaping (Texture?)->Void) {
       if let filteringPipeling = self.filteringPipeling {
          for filter in self.filters {
             filteringPipeling.set(filter: filter)
@@ -127,6 +127,7 @@ class MainViewController: UIViewController {
             if let renderer = self.renderer {
                renderer.texture = filteredTexture
             }
+            completion(filteredTexture)
          }
       }
    }
@@ -198,34 +199,12 @@ class MainViewController: UIViewController {
       }
 
       let texture = Texture(from: frame, on: device)
-      applyFilters(to: texture)
-      if let metalTexture = renderer?.texture?.texture {
-         //imageUtils.updateSample(sampleBuffer: frame, texture: metalTexture)
-       //  if recorder?.status == .recording {
-         //let  pixelBuffer = CMSampleBufferGetImageBuffer(frame)
-         var pixelBuffer: CVPixelBuffer? = nil
-         let res = CVPixelBufferCreate(nil, metalTexture.width, metalTexture.height, kCVPixelFormatType_32BGRA, nil, &pixelBuffer)
-         if let pixelBuffer = pixelBuffer {
-            CVPixelBufferLockBaseAddress(pixelBuffer, .init(rawValue: 0))
-            let bytesPerRow = CVPixelBufferGetBytesPerRow(pixelBuffer)
-            let width = CVPixelBufferGetWidth(pixelBuffer)
-            let height = CVPixelBufferGetHeight(pixelBuffer)
-            let region = MTLRegionMake2D(0, 0, Int(width), height)
-
-            guard let tempBuffer = CVPixelBufferGetBaseAddress(pixelBuffer) else {
-               Log.e("Return from tmpbuffer", self)
-               return
-            }
-            metalTexture.getBytes(tempBuffer, bytesPerRow: Int(bytesPerRow), from: region, mipmapLevel: 0)
-            CVPixelBufferUnlockBaseAddress(pixelBuffer, .init(rawValue: 0))
-
-        // }
-         recorder?.appendFrame(sample: frame, sample1: pixelBuffer)
+      applyFilters(to: texture) { filteredTexture in
+         if let filteredTexture = filteredTexture {
+            self.saveFrame(texture: filteredTexture, timestamp: frame.timestamp())
          }
+         self.displayFps()
       }
-
-      self.displayFps()
-
    }
 
    private func displayFps() {
@@ -269,6 +248,7 @@ class MainViewController: UIViewController {
    private func initRecorderIfNeeded() {
       if recorder == nil, let videoFormat = camera.videoCaptureDevice?.activeFormat {
          recorder = VideoRecorder(videoFormatDescription: videoFormat.formatDescription)
+         recorder?.statusHandler = videoRecorderStatusHandler(recorderInfo:)
       }
    }
 
@@ -280,9 +260,6 @@ class MainViewController: UIViewController {
       }
 
       switch recorder.status {
-      case .initialized:
-         // TODO
-         print("something here")
       case .idle:
          recorder.record()
          recordAndPauseButton.setImage(pauseImage, for: .normal)
@@ -301,9 +278,25 @@ class MainViewController: UIViewController {
       }
    }
 
+   private func videoRecorderStatusHandler(recorderInfo: RecorderInfo) -> Void {
+      switch recorderInfo.recorderStatus {
+      case .prepared:
+         recordOrPauseRecording()
+
+      default:
+         Log.d("No action for this status")
+      }
+   }
+
    private func stopRecording() {
       recorder?.stop()
       stopButton.isEnabled = false
       recordAndPauseButton.setImage(recordImage, for: .normal)
+   }
+
+   private func saveFrame(texture: Texture, timestamp: CMTime) {
+      if let frame = texture.pixelBuffer {
+         recorder?.appendFrame(sample: frame, at: timestamp)
+      }
    }
 }
