@@ -6,6 +6,7 @@
 //  Copyright © 2019 Javi. All rights reserved.
 //
 
+#include <metal_math>
 #include <metal_stdlib>
 #include "Filters.h"
 
@@ -32,7 +33,7 @@ struct Filters {
 
 vertex RasterizerIn vertex_shader(const VertexIn vertexIn [[ stage_in ]]) {
    RasterizerIn rasterizerIn;
-   rasterizerIn.position = vertexIn.position;
+   rasterizerIn.position = mirrorOverY(rotateVertex(vertexIn.position));
    rasterizerIn.textureCoordinates = vertexIn.textureCoordinates;
    
    return rasterizerIn;
@@ -61,3 +62,4 @@ kernel void kernel_shader(texture2d<float, access::read> sourceTexture [[texture
    color = apply_saturation(color, filters.saturation);
    filteredTexture.write(color, position);
 }
+

@@ -29,6 +29,8 @@
 		598F9BDA23055B1100F0E4C0 /* VideoCamera.swift in Sources */ = {isa = PBXBuildFile; fileRef = 598F9BD923055B1100F0E4C0 /* VideoCamera.swift */; };
 		598F9BDF230C063F00F0E4C0 /* OrientationDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 598F9BDE230C063F00F0E4C0 /* OrientationDetector.swift */; };
 		59A3992723AB826B00CA74E8 /* CMSampleBuffer+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59A3992623AB826B00CA74E8 /* CMSampleBuffer+Extension.swift */; };
+		59BFAD1023C35690001425AF /* MetalKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 59BFAD0E23C35690001425AF /* MetalKit.framework */; };
+		59BFAD1123C35690001425AF /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 59BFAD0F23C35690001425AF /* Metal.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -69,6 +71,8 @@
 		598F9BD923055B1100F0E4C0 /* VideoCamera.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoCamera.swift; sourceTree = "<group>"; };
 		598F9BDE230C063F00F0E4C0 /* OrientationDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrientationDetector.swift; sourceTree = "<group>"; };
 		59A3992623AB826B00CA74E8 /* CMSampleBuffer+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CMSampleBuffer+Extension.swift"; sourceTree = "<group>"; };
+		59BFAD0E23C35690001425AF /* MetalKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MetalKit.framework; path = System/Library/Frameworks/MetalKit.framework; sourceTree = SDKROOT; };
+		59BFAD0F23C35690001425AF /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = System/Library/Frameworks/Metal.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -76,6 +80,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				59BFAD1123C35690001425AF /* Metal.framework in Frameworks */,
+				59BFAD1023C35690001425AF /* MetalKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -104,6 +110,7 @@
 				594677F622D80A6400F94E58 /* VideoRecorder */,
 				5946780B22D80A6700F94E58 /* VideoRecorderTests */,
 				594677F522D80A6400F94E58 /* Products */,
+				59BFAD0D23C35690001425AF /* Frameworks */,
 			);
 			indentWidth = 3;
 			sourceTree = "<group>";
@@ -180,6 +187,15 @@
 				5907DCFF239F94B60031ABBD /* ImageUtils.swift */,
 			);
 			path = Video;
+			sourceTree = "<group>";
+		};
+		59BFAD0D23C35690001425AF /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				59BFAD0F23C35690001425AF /* Metal.framework */,
+				59BFAD0E23C35690001425AF /* MetalKit.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -487,7 +503,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 45J85HU5GF;
 				INFOPLIST_FILE = VideoRecorder/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -508,7 +524,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 45J85HU5GF;
 				INFOPLIST_FILE = VideoRecorder/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

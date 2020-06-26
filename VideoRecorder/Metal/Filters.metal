@@ -48,3 +48,29 @@ float4 apply_saturation(float4 color, float saturation) {
                  saturated_color_channel(color.b, brightness_value, saturation),
                  1.0);
 }
+
+float4 rotateVertex(float4 position) {
+
+   // z rotation matrix
+   // | x |     | cosø -sinø 0 |
+   // | y |  *  | sinø  cosø 0 |
+   // | z |     |  0      0  1 |
+
+   float angle = M_PI_2_F;
+   float cosA = cos(angle);
+   float sinA = sin(angle);
+   float x = position[0];
+   float y = position[1];
+   float z = position[2];
+
+   // Applying matrix to rotate over z axis
+   float x1 = x * cosA - y * sinA;
+   float y1 = x * sinA + y * cosA;
+   float z1 = z;
+
+   return float4(x1, y1, z1, position[3]);
+}
+
+float4 mirrorOverY(float4 position) {
+   return float4(position[0], -position[1], position[2], position[3]);
+}

@@ -58,7 +58,7 @@ class MainViewController: UIViewController {
    var recorder: VideoRecorder?
 
    var orientationIsLocked: Bool {
-      return recorder?.status != .idle
+      return recorder != nil && recorder?.status != .idle
    }
 
    let imageUtils = ImageUtils()
@@ -87,8 +87,10 @@ class MainViewController: UIViewController {
          setupUI()
          camera.videoOutputHandler = handleVideoOutput
          camera.start()
-         orientationDetector.orientationChangedHandler = { newOrientation in
-            self.handle(orientation: newOrientation)
+         orientationDetector.orientationChangedHandler = { [weak self] newOrientation in
+            if let self = self {
+               self.handle(orientation: newOrientation)
+            }
          }
          orientationDetector.start()
       }
@@ -194,6 +196,7 @@ class MainViewController: UIViewController {
 
    // MARK: Video Camera
    private func handleVideoOutput(frame: CMSampleBuffer) {
+
       guard let device = self.device else {
          return
       }
@@ -205,6 +208,7 @@ class MainViewController: UIViewController {
          }
          self.displayFps()
       }
+
    }
 
    private func displayFps() {
@@ -278,7 +282,7 @@ class MainViewController: UIViewController {
       }
    }
 
-   private func videoRecorderStatusHandler(recorderInfo: RecorderInfo) -> Void {
+   private func videoRecorderStatusHandler(recorderInfo: RecorderInfo) {
       switch recorderInfo.recorderStatus {
       case .prepared:
          recordOrPauseRecording()

@@ -35,10 +35,7 @@ class VideoCamera: NSObject {
                                                autoreleaseFrequency: .workItem)
    private let videoDataOutput = AVCaptureVideoDataOutput()
    private var setupResult: SessionSetupResult = .success
-
    private var videoDeviceInput: AVCaptureDeviceInput?
-
-
    private let fpsCalculator: FpsCalculator
 
    var videoCaptureDevice: AVCaptureDevice?
@@ -53,8 +50,10 @@ class VideoCamera: NSObject {
 
    func start() {
       if isCameraAccesGranted() {
-         sessionQueue.async {
-            self.configureSession()
+         sessionQueue.async {[weak self] in
+            if let self = self {
+               self.configureSession()
+            }
          }
       }
    }
@@ -105,9 +104,6 @@ class VideoCamera: NSObject {
 
    private func hasDesiredResolution(format: CMFormatDescription) -> Bool {
       let dimension = CMVideoFormatDescriptionGetDimensions(format)
-      if orientation.isLandscape {
-         return dimension.height == kVideoWidth
-      }
       return dimension.width == kVideoWidth
    }
 
@@ -130,7 +126,6 @@ class VideoCamera: NSObject {
                bestFormat = format
             }
          }
-
       }
 
       if let bestFormat = bestFormat,
@@ -267,11 +262,6 @@ extension VideoCamera {
    private func initialConnectionSetup() {
       if self.videoDataOutput.connections.count > 0 {
          connection = self.videoDataOutput.connections[0]
-         if let connection = connection {
-            connection.automaticallyAdjustsVideoMirroring = false
-            connection.videoOrientation = .portraitUpsideDown
-            connection.isVideoMirrored = true
-         }
       }
    }
 }

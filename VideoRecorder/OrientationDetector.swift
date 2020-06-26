@@ -27,13 +27,14 @@ class OrientationDetector {
    private var currentOrientation: BasicOrientation!
    private let motion = CMMotionManager()
    private let motionQueue = OperationQueue()
-
+   private var firstOrientation = true
    func start() {
       startDetection()
    }
 
    func stop() {
       stopDetection()
+      firstOrientation = true
    }
 
    private func startDetection() {
@@ -55,7 +56,8 @@ class OrientationDetector {
 
    private func detectOrientation(pitch: Double) {
       let newOrientation: BasicOrientation = (abs(pitch) > kOrientationLimit ? .portrait : .landscape)
-      if newOrientation != currentOrientation {
+      if newOrientation != currentOrientation || firstOrientation {
+         firstOrientation = false
          if let handler = orientationChangedHandler {
             handler(newOrientation)
          }

@@ -22,9 +22,9 @@ class TextureFilteringPipeline {
    private var kernelFilters: Filters
    private var filtersDefaults: Filters
 
-   private let kBrightnessFilterKey = TextureFilteringPipeline.key(for: BrightnessFilter.self)
-   private let kContrastFilterKey = TextureFilteringPipeline.key(for: ContrastFilter.self)
-   private let kSaturationFilterKey = TextureFilteringPipeline.key(for: SaturationFilter.self)
+   private let kBrightnessFilterKey = "BrightnessFilter"
+   private let kContrastFilterKey = "ContrastFilter"
+   private let kSaturationFilterKey = "SaturationFilter"
 
    init(device: MTLDevice) {
       filters = [String: TextureFilter]()
@@ -38,11 +38,11 @@ class TextureFilteringPipeline {
    }
 
    func set(filter: TextureFilter) {
-      filters[TextureFilteringPipeline.key(for: type(of: filter))] = filter
+      filters[filter.name] = filter
    }
 
-   func clear(filter: TextureFilter.Type) {
-      filters.removeValue(forKey: TextureFilteringPipeline.key(for: filter))
+   func clear(filter: TextureFilter) {
+      filters.removeValue(forKey: filter.name)
    }
 
    func clearAllFilters() {
@@ -103,10 +103,6 @@ class TextureFilteringPipeline {
 }
 
 extension TextureFilteringPipeline {
-
-   private static func key(for filterType: TextureFilter.Type) -> String {
-      return String(describing: filterType)
-   }
 
    private func buildPipelineState() {
       let library = device.makeDefaultLibrary()

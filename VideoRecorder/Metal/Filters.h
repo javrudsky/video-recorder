@@ -12,5 +12,7 @@
 float4 apply_brightness(float4 color, float brightness);
 float4 apply_contrast(float4 color, float contrast);
 float4 apply_saturation(float4 color, float saturation);
+float4 rotateVertex(float4 position);
+float4 mirrorOverY(float4 position);
 
 #endif /* Filters_h */

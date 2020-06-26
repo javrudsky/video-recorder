@@ -52,6 +52,8 @@ class VideoRecorder {
    private var videoSourceWriterInput: AVAssetWriterInput?
    private var videoFormatDescription: CMFormatDescription
    private var assetWriterInputPixelBufferAdaptor: AVAssetWriterInputPixelBufferAdaptor?
+   private let orientationDetector = OrientationDetector()
+   private var shouldRotateOnWrite = false
 
    private var recordingStatus: RecorderStatus = .idle
    var status: RecorderStatus {
@@ -66,6 +68,12 @@ class VideoRecorder {
 
    init(videoFormatDescription: CMFormatDescription) {
       self.videoFormatDescription = videoFormatDescription
+      orientationDetector.orientationChangedHandler = { [weak self] newOrientation in
+         if let self = self {
+            self.shouldRotateOnWrite = newOrientation == .portrait
+         }
+      }
+      orientationDetector.start()
    }
 
    // MARK: - API -
@@ -139,11 +147,11 @@ class VideoRecorder {
                                      errorMessage:
                      "Failed to start writing with asset writer: " +
                         (writer.error?.localizedDescription ?? "Unknown error") +
-                  "for url: \(url.path))")
+                     "for url: \(url.path))")
                }
             } else {
                transitionToStatus(.failed,
-                               errorMessage: "Asset writer was not created")
+                                  errorMessage: "Asset writer was not created")
             }
          } catch {
             transitionToStatus(.failed,
@@ -156,33 +164,34 @@ class VideoRecorder {
 
       // TODO: Refactor this code
       var videoSettings = [String: Any]()
+
       if videoSettings.isEmpty {
-          var bitsPerPixel: Float
-          let dimensions = CMVideoFormatDescriptionGetDimensions(videoFormatDescription)
+         var bitsPerPixel: Float
+         let dimensions = CMVideoFormatDescriptionGetDimensions(videoFormatDescription)
          let numPixels = Float(dimensions.width * dimensions.height)
-          var bitsPerSecond: Int
+         var bitsPerSecond: Int
 
          Log.d("No video settings provided, using default settings", self)
 
-          // Assume that lower-than-SD resolutions are intended for streaming, and use a lower bitrate
-          if numPixels < 640 * 480 {
+         // Assume that lower-than-SD resolutions are intended for streaming, and use a lower bitrate
+         if numPixels < 640 * 480 {
             // This bitrate approximately matches the quality produced by AVCaptureSessionPresetMedium or Low.
-              bitsPerPixel = 4.05
-          } else {
+            bitsPerPixel = 4.05
+         } else {
             // This bitrate approximately matches the quality produced by AVCaptureSessionPresetHigh.
-              bitsPerPixel = 10.1
-          }
+            bitsPerPixel = 10.1
+         }
 
          bitsPerSecond = Int(numPixels * bitsPerPixel)
 
-          let compressionProperties: NSDictionary = [AVVideoAverageBitRateKey: bitsPerSecond,
-              AVVideoExpectedSourceFrameRateKey: 30,
-              AVVideoMaxKeyFrameIntervalKey: 30]
+         let compressionProperties: NSDictionary = [AVVideoAverageBitRateKey: bitsPerSecond,
+                                                    AVVideoExpectedSourceFrameRateKey: 30,
+                                                    AVVideoMaxKeyFrameIntervalKey: 30]
 
          videoSettings = [AVVideoCodecKey: AVVideoCodecType.h264,
-              AVVideoWidthKey: dimensions.width,
-              AVVideoHeightKey: dimensions.height,
-              AVVideoCompressionPropertiesKey: compressionProperties]
+                          AVVideoWidthKey: dimensions.width,
+                          AVVideoHeightKey: dimensions.height,
+                          AVVideoCompressionPropertiesKey: compressionProperties]
       }
 
       videoSourceWriterInput = AVAssetWriterInput(mediaType: .video,
@@ -192,6 +201,10 @@ class VideoRecorder {
       if let videoSourceWriterInput = videoSourceWriterInput,
          let assetWriter = assetWriter,
          assetWriter.canAdd(videoSourceWriterInput) {
+
+         if shouldRotateOnWrite {
+            videoSourceWriterInput.transform = CGAffineTransform(rotationAngle: .pi/2)
+         }
 
          assetWriterInputPixelBufferAdaptor = AVAssetWriterInputPixelBufferAdaptor(
             assetWriterInput: videoSourceWriterInput,
@@ -203,13 +216,15 @@ class VideoRecorder {
       return false
    }
 
-   func appendFrame(sample: CVPixelBuffer,at sourceTime: CMTime) {
+   func appendFrame(sample: CVPixelBuffer, at sourceTime: CMTime) {
       guard let assetWriter = self.assetWriter else {
          return
       }
 
-      writingQueue.async {
-
+      writingQueue.async {[weak self] in
+         guard let self = self else {
+            return
+         }
          if self.status == .prepared || self.status == .resuming {
             assetWriter.startSession(atSourceTime: sourceTime)
             Log.d("Recording session started: \(assetWriter.status)", self)
@@ -236,6 +251,7 @@ class VideoRecorder {
             videoSourceWriterInput.isReadyForMoreMediaData,
             self.canAppendFrames() {
             Log.d("Adding samples: \(assetWriter.status)", self)
+            //TODO: Fix leak produced in this line
             assetWriterInputPixelBufferAdaptor.append(sample,
                                                       withPresentationTime: sourceTime)
          }
@@ -252,26 +268,21 @@ class VideoRecorder {
                                                 recorderStatus: self.status,
                                                 message: message))
                Log.e(message, self)
-            } else {
-               // TODO: Think better about recorder info status
-
-               Log.d("Finished writting file: \(self.currentFileUrl?.path ?? "Unknown")", self)
             }
 
             if let url = self.currentFileUrl, self.status != .failed {
                PHPhotoLibrary.shared().performChanges({
                   PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: url)
                }, completionHandler: { saved, error in
-                   if saved {
+                  if saved {
                      self.statusHandler?(RecorderInfo(operationResult: .writeFileSuccess, recorderStatus: .idle))
-                   } else {
+                  } else {
                      self.statusHandler?(RecorderInfo(operationResult: .writeFileFail,
                                                       recorderStatus: .idle,
                                                       message: "Error saving to photo library"))
                      Log.e("Error saving to library \(error.debugDescription)", self)
                   }
                })
-
             }
             self.transitionToStatus(.idle)
          }
@@ -300,6 +311,7 @@ class VideoRecorder {
       }
    }
 
+   // FIXME: Fix issue when first time running app and asking for permissions
    // MARK: - Check Permissions
    private func isPhotoLibraryGranted() -> Bool {
       return PHPhotoLibrary.authorizationStatus() == .authorized
