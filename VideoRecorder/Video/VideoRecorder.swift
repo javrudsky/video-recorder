@@ -54,6 +54,8 @@ class VideoRecorder {
    private var assetWriterInputPixelBufferAdaptor: AVAssetWriterInputPixelBufferAdaptor?
    private let orientationDetector = OrientationDetector()
    private var shouldRotateOnWrite = false
+   private var lastPauseTime = CMTimeMake(value: 0, timescale: 1)
+   private var totalPauseTimeOffset = CMTimeMake(value: 0, timescale: 1)
 
    private var recordingStatus: RecorderStatus = .idle
    var status: RecorderStatus {
@@ -95,7 +97,7 @@ class VideoRecorder {
    }
 
    func resume() {
-      transitionToStatus(.recording)
+      transitionToStatus(.resuming)
    }
 
    func pause() {
@@ -217,6 +219,7 @@ class VideoRecorder {
    }
 
    func appendFrame(sample: CVPixelBuffer, at sourceTime: CMTime) {
+
       guard let assetWriter = self.assetWriter else {
          return
       }
@@ -225,22 +228,32 @@ class VideoRecorder {
          guard let self = self else {
             return
          }
+
+         var fixedSourceTime = CMTimeSubtract(sourceTime, self.totalPauseTimeOffset)
+
          if self.status == .prepared || self.status == .resuming {
-            assetWriter.startSession(atSourceTime: sourceTime)
+            let lastPauseTimeOffset = CMTimeSubtract(sourceTime, self.lastPauseTime)
+            self.totalPauseTimeOffset = CMTimeAdd(self.totalPauseTimeOffset, lastPauseTimeOffset)
+            fixedSourceTime = CMTimeSubtract(sourceTime, self.totalPauseTimeOffset)
+            assetWriter.startSession(atSourceTime: fixedSourceTime)
             Log.d("Recording session started: \(assetWriter.status)", self)
             self.transitionToStatus(.recording)
          }
 
+         if self.status == .paused {
+            return
+         }
+
          if self.status == .pausing {
             self.transitionToStatus(.paused)
-            assetWriter.endSession (atSourceTime: sourceTime)
+            self.lastPauseTime = sourceTime
             Log.d("Recording session paused: \(assetWriter.status)", self)
             return
          }
 
          if self.status == .stoping {
             self.transitionToStatus(.stopped)
-            assetWriter.endSession (atSourceTime: sourceTime)
+            assetWriter.endSession (atSourceTime: fixedSourceTime)
             self.stopRecording()
             Log.d("Recording session stopped: \(assetWriter.status)", self)
             return
@@ -250,10 +263,10 @@ class VideoRecorder {
             let assetWriterInputPixelBufferAdaptor = self.assetWriterInputPixelBufferAdaptor,
             videoSourceWriterInput.isReadyForMoreMediaData,
             self.canAppendFrames() {
-            Log.d("Adding samples: \(assetWriter.status)", self)
+//            Log.d("Adding samples: \(assetWriter.status)", self)
             //TODO: Fix leak produced in this line
             assetWriterInputPixelBufferAdaptor.append(sample,
-                                                      withPresentationTime: sourceTime)
+                                                      withPresentationTime: fixedSourceTime)
          }
       }
    }

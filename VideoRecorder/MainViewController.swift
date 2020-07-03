@@ -278,7 +278,7 @@ class MainViewController: UIViewController {
          // TODO: Display error on UI
          Log.e("Wrong recorder status", self)
       default:
-         Log.d("No action for this status")
+         Log.d("No action for this status \(recorder.status)")
       }
    }
 
