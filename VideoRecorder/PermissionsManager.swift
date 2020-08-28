@@ -11,40 +11,39 @@ import Photos
 
 class PermissionsManager {
 
-   func checkAndAskCameraPermissions() -> Bool {
-      var result: AVAuthorizationStatus = .authorized
-      switch AVCaptureDevice.authorizationStatus(for: .video) {
-      case .authorized:
-         break
+   var permissionsGrantedHandler: (() -> Void)?
 
-      case .notDetermined:
+   var cameraResult = false
+   var photoLibraryResult = false
 
+   func checkAndAskPermissions() -> Bool {
+      let cameraStatus = AVCaptureDevice.authorizationStatus(for: .video)
+      if cameraStatus == .notDetermined {
          AVCaptureDevice.requestAccess(for: .video, completionHandler: { granted in
-            if !granted {
-               result = .denied
-            }
+            self.cameraResult = granted
+            self.triggerPermissionHandler()
          })
-
-      default:
-         result = .denied
+      } else {
+         cameraResult = (cameraStatus == .authorized)
       }
-      return result == .authorized
+
+      let photoLibraryStatus = PHPhotoLibrary.authorizationStatus()
+      if photoLibraryStatus == .notDetermined {
+         PHPhotoLibrary.requestAuthorization { access in
+            self.photoLibraryResult = (access == .authorized)
+            self.triggerPermissionHandler()
+         }
+      } else {
+         photoLibraryResult = (photoLibraryStatus == .authorized)
+      }
+      return cameraResult && photoLibraryResult
    }
 
-   func checkAndAskPhotoLibraryAccess() -> Bool {
-      var result: PHAuthorizationStatus = .authorized
-      switch PHPhotoLibrary.authorizationStatus() {
-      case .authorized:
-         break
-
-      case .notDetermined:
-         PHPhotoLibrary.requestAuthorization { access in
-            result = access
+   private func triggerPermissionHandler() {
+      if cameraResult, photoLibraryResult, let handler = permissionsGrantedHandler {
+         DispatchQueue.main.async {
+            handler()
          }
-
-      default:
-         result = .denied
       }
-      return result == .authorized
    }
 }

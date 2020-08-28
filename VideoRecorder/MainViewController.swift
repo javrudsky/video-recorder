@@ -68,14 +68,30 @@ class MainViewController: UIViewController {
 
       let permissionsManager = PermissionsManager()
 
-      if !permissionsManager.checkAndAskCameraPermissions() {
+      permissionsManager.permissionsGrantedHandler = { [weak self] in
+         if let self = self {
+            self.start()
+         }
+      }
+
+      if !permissionsManager.checkAndAskPermissions() {
          return
       }
 
-      if !permissionsManager.checkAndAskPhotoLibraryAccess() {
-         return
-      }
+      start()
+   }
 
+   @IBAction func filterValueChanged(_ sender: UISlider) {
+      if let index = filterSliders.firstIndex(of: sender) {
+         updateFilter(index: index, value: filterSliders[index].value)
+      }
+   }
+
+   @IBAction func resetFiltersButtonTap(_ sender: UIButton) {
+      resetFilters()
+   }
+
+   private func start() {
       if let device = MTLCreateSystemDefaultDevice() {
          self.device = device
          filteringPipeling = TextureFilteringPipeline(device: device)
@@ -96,16 +112,6 @@ class MainViewController: UIViewController {
       }
    }
 
-   @IBAction func filterValueChanged(_ sender: UISlider) {
-      if let index = filterSliders.firstIndex(of: sender) {
-         updateFilter(index: index, value: filterSliders[index].value)
-      }
-   }
-
-   @IBAction func resetFiltersButtonTap(_ sender: UIButton) {
-      resetFilters()
-   }
-
    // MARK: Filtering
    private func resetFilters() {
       for index in 0..<filters.count {
@@ -120,7 +126,7 @@ class MainViewController: UIViewController {
       setFilterLabelTitle(index: index, value: value)
    }
 
-   private func applyFilters(to texture: Texture, completion: @escaping (Texture?)->Void) {
+   private func applyFilters(to texture: Texture, completion: @escaping (Texture?)-> Void) {
       if let filteringPipeling = self.filteringPipeling {
          for filter in self.filters {
             filteringPipeling.set(filter: filter)
